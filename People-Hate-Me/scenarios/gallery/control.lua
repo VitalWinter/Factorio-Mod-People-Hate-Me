@@ -17,15 +17,19 @@ local rows =
   {y = 12, label = "fallen", state = "fallen"},
 }
 
+-- The fallen row dies a little after the others start fighting, so the screenshot right
+-- after catches the blood in the air and the aftermath shot catches the blood pools.
+local death_tick = 120
+local check_tick = 600
+
 local screenshots =
 {
+  {tick = 150, path = "fallen.png", position = {0, 11.5}, zoom = 3, resolution = {2560, 600}},
   {tick = 180, path = "overview.png", position = {-4, 2}, zoom = 1.75, resolution = {2048, 1536}},
   {tick = 190, path = "standing.png", position = {-4, -3}, zoom = 3, resolution = {2880, 1080}},
   {tick = 200, path = "fighting.png", position = {0, 5}, zoom = 3, resolution = {2560, 1080}},
-  {tick = 210, path = "fallen.png", position = {0, 11.5}, zoom = 3, resolution = {2560, 600}},
+  {tick = 900, path = "aftermath.png", position = {0, 11.5}, zoom = 3, resolution = {2560, 600}},
 }
-
-local check_tick = 600
 
 local function label(surface, text, position, alignment)
   rendering.draw_text
@@ -77,6 +81,7 @@ local function build_row(surface, row)
       local unit = spawn(surface, tier .. "-" .. row.kind, {x, row.y})
       unit.commandable.set_command{type = defines.command.stop, distraction = defines.distraction.none}
       unit.disabled_by_script = true
+      rendering.draw_sprite{sprite = "entity/" .. unit.name, surface = surface, target = {x - 1.6, row.y - 0.6}}
 
     elseif row.state == "fighting" then
       local unit = spawn(surface, tier .. "-" .. row.kind, {x, row.y})
@@ -88,11 +93,16 @@ local function build_row(surface, row)
         end
       end
       unit.commandable.set_command{type = defines.command.attack, target = target, distraction = defines.distraction.none}
-
-    elseif row.state == "fallen" then
-      spawn(surface, tier .. "-biter", {x - 1, row.y}).die()
-      spawn(surface, tier .. "-spitter", {x + 1.5, row.y}).die()
     end
+  end
+end
+
+local function kill_fallen_row(surface)
+  local row = rows[#rows]
+  for column, tier in pairs(tiers) do
+    local x = column_x[column] + 0.5
+    spawn(surface, tier .. "-biter", {x - 1, row.y}).die()
+    spawn(surface, tier .. "-spitter", {x + 1.5, row.y}).die()
   end
 end
 
@@ -124,6 +134,10 @@ local function run_checks()
   local corpses = {}
   for _, corpse in pairs(surface.find_entities_filtered{area = gallery_area, type = "corpse"}) do
     corpses[corpse.name] = true
+    local is_person = corpse.name:find("biter", 1, true) or corpse.name:find("spitter", 1, true)
+    if is_person and not corpse.color then
+      table.insert(failures, corpse.name .. " has no individual colour")
+    end
   end
 
   for _, tier in pairs(tiers) do
@@ -184,6 +198,9 @@ script.on_event(defines.events.on_tick, function(event)
         daytime = 0,
       }
     end
+  end
+  if event.tick == death_tick then
+    kill_fallen_row(game.surfaces["nauvis"])
   end
   if event.tick == check_tick then
     run_checks()

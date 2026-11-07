@@ -2,30 +2,14 @@
 -- engineer's own sprites (__base__/graphics/entity/character).
 
 local util = require("util")
+require("sound-util")
+local definitions = require("definitions")
 
 if not character_animations then
   require("__base__.prototypes.entity.character-animations")
 end
 
 local blood_tint = {r = 0.55, g = 0.06, b = 0.05, a = 1}
-
--- scale:  body size relative to the engineer
--- outfit: character_animations sets drawn on top of each other, the same way the
---         engineer's armor tiers are drawn
--- tint:   clothing colour, applied where the engineer shows the player colour
--- role:   "melee" people swing a pickaxe, "ranged" people aim a gun
-local people =
-{
-  ["small-biter"]      = {scale = 0.8,  outfit = {"level1"},                tint = {0.78, 0.62, 0.42}, role = "melee"},
-  ["medium-biter"]     = {scale = 0.95, outfit = {"level1", "level2addon"}, tint = {0.72, 0.26, 0.22}, role = "melee"},
-  ["big-biter"]        = {scale = 1.1,  outfit = {"level1", "level3addon"}, tint = {0.26, 0.36, 0.78}, role = "melee"},
-  ["behemoth-biter"]   = {scale = 1.35, outfit = {"level1", "level3addon"}, tint = {0.24, 0.52, 0.16}, role = "melee"},
-
-  ["small-spitter"]    = {scale = 0.8,  outfit = {"level1"},                tint = {0.92, 0.56, 0.12}, role = "ranged"},
-  ["medium-spitter"]   = {scale = 0.95, outfit = {"level1", "level2addon"}, tint = {0.74, 0.22, 0.48}, role = "ranged"},
-  ["big-spitter"]      = {scale = 1.1,  outfit = {"level1", "level3addon"}, tint = {0.12, 0.56, 0.60}, role = "ranged"},
-  ["behemoth-spitter"] = {scale = 1.35, outfit = {"level1", "level3addon"}, tint = {0.52, 0.70, 0.12}, role = "ranged"},
-}
 
 local attack_poses =
 {
@@ -34,49 +18,78 @@ local attack_poses =
   ranged = {name = "idle_gun", animation_speed = 0.25},
 }
 
-local function dress(layer, person)
+local pickaxe_hits =
+{
+  category = "enemy",
+  variations = sound_variations("__core__/sound/axe-mining-stone", 7, 0.5),
+  aggregation = {max_count = 2, remove = true, count_already_playing = true},
+}
+
+local gunshots =
+{
+  category = "enemy",
+  variations = sound_variations("__base__/sound/fight/light-gunshot", 7, 0.3),
+  aggregation = {max_count = 2, remove = true, count_already_playing = true},
+}
+
+-- keep_runtime_tint leaves the colour mask to be tinted per entity at runtime
+-- (LuaEntity.color), which is how corpses get individual shades.
+local function dress(layer, look, body_tint, keep_runtime_tint)
   local piece = table.deepcopy(layer)
-  piece.scale = (piece.scale or 1) * person.scale
-  piece.shift = util.mul_shift(piece.shift, person.scale)
+  piece.scale = (piece.scale or 1) * look.scale
+  piece.shift = util.mul_shift(piece.shift, look.scale)
   piece.usage = "enemy"
   if piece.apply_runtime_tint then
-    piece.apply_runtime_tint = false
-    piece.tint = person.tint
+    if not keep_runtime_tint then
+      piece.apply_runtime_tint = false
+      piece.tint = look.tint
+    end
+  elseif body_tint and not piece.draw_as_shadow then
+    piece.tint = body_tint
   end
   return piece
 end
 
 -- Builds one pose (e.g. "running") for a person, layered like the engineer:
--- every outfit piece with its colour mask first, then all of their shadows.
-local function pose(person, name, animation_speed)
+-- the body and any armor with their colour masks first, then all of their shadows.
+local function pose(look, name, options)
+  options = options or {}
+  local sets = {{name = "level1"}}
+  if look.armor then
+    table.insert(sets, {name = look.armor, body_tint = look.armor_tint})
+  end
+
   local layers, shadows = {}, {}
-  for _, set_name in pairs(person.outfit) do
-    local set = character_animations[set_name]
+  for _, set in pairs(sets) do
+    local animations = character_animations[set.name]
     for _, suffix in pairs({"", "_mask"}) do
-      if set[name .. suffix] then
-        table.insert(layers, dress(set[name .. suffix], person))
+      local layer = animations[name .. suffix]
+      if layer then
+        table.insert(layers, dress(layer, look, set.body_tint, options.keep_runtime_tint))
       end
     end
-    if set[name .. "_shadow"] then
-      table.insert(shadows, dress(set[name .. "_shadow"], person))
+    local shadow = animations[name .. "_shadow"]
+    if shadow then
+      table.insert(shadows, dress(shadow, look))
     end
   end
   for _, shadow in pairs(shadows) do
     table.insert(layers, shadow)
   end
-  if animation_speed then
+
+  if options.animation_speed then
     for _, layer in pairs(layers) do
-      layer.animation_speed = animation_speed
+      layer.animation_speed = options.animation_speed
     end
   end
   return {layers = layers}
 end
 
 -- The engineer's death sheet holds two different fallen poses side by side.
-local function corpse_variations(person)
+local function corpse_variations(look)
   local variations = {}
   for frame = 0, 1 do
-    local body = pose(person, "dead")
+    local body = pose(look, "dead", {keep_runtime_tint = true})
     for _, layer in pairs(body.layers) do
       layer.frame_count = 1
       layer.x = frame * layer.width
@@ -97,36 +110,67 @@ local function muzzle_offsets(scale)
   return offsets
 end
 
-local function water_reflection(person)
+local function water_reflection(look)
   local reflection = table.deepcopy(data.raw["character"]["character"].water_reflection)
-  reflection.pictures.scale = reflection.pictures.scale * person.scale
-  reflection.pictures.shift = util.mul_shift(reflection.pictures.shift, person.scale)
+  reflection.pictures.scale = reflection.pictures.scale * look.scale
+  reflection.pictures.shift = util.mul_shift(reflection.pictures.shift, look.scale)
   return reflection
 end
 
-local function humanize_unit(unit, person)
-  local s = person.scale
-  local attack = attack_poses[person.role]
+-- The engineer's icon, badged with the tier's armor and, for gunmen, a gun.
+local function icons(look)
+  local layers = {{icon = "__core__/graphics/icons/entity/character.png"}}
+  if look.armor_icon then
+    table.insert(layers, {icon = "__base__/graphics/icons/" .. look.armor_icon .. ".png", scale = 0.25, shift = {8, 8}})
+  end
+  if look.role == "ranged" then
+    table.insert(layers, {icon = "__base__/graphics/icons/submachine-gun.png", scale = 0.25, shift = {-8, 8}})
+  end
+  return layers
+end
 
-  unit.run_animation = pose(person, "running")
+local function footsteps(look)
+  return
+  {
+    aggregation = {max_count = 3, remove = true, count_already_playing = true},
+    variations = sound_variations_with_volume_variations("__base__/sound/walking/dirt-1", 10, look.footstep_volume[1], look.footstep_volume[2]),
+    priority = 192,
+  }
+end
+
+local function humanize_unit(unit, look)
+  local s = look.scale
+  local attack = attack_poses[look.role]
+
+  unit.icon = nil
+  unit.icons = icons(look)
+
+  unit.run_animation = pose(look, "running")
   unit.distance_per_frame = 0.13 * s
   unit.running_sound_animation_positions = {5, 16}
+  unit.walking_sound = footsteps(look)
+  unit.working_sound = nil
+  unit.dying_sound = nil
 
   unit.alternative_attacking_frame_sequence = nil
-  unit.attack_parameters.animation = pose(person, attack.name, attack.animation_speed)
-  if person.role == "ranged" then
+  unit.attack_parameters.animation = pose(look, attack.name, {animation_speed = attack.animation_speed})
+  if look.role == "ranged" then
     unit.attack_parameters.projectile_creation_parameters = muzzle_offsets(s)
+    unit.attack_parameters.sound = nil
+    unit.attack_parameters.cyclic_sound = {begin_sound = gunshots}
+  else
+    unit.attack_parameters.sound = pickaxe_hits
   end
 
   unit.selection_box = {{-0.4 * s, -1.4 * s}, {0.4 * s, 0.2 * s}}
   unit.hit_visualization_box = {{-0.2 * s, -1.1 * s}, {0.2 * s, 0.2 * s}}
   unit.sticker_box = {{-0.2 * s, -1.0 * s}, {0.2 * s, 0}}
-  unit.water_reflection = water_reflection(person)
+  unit.water_reflection = water_reflection(look)
   unit.random_corpse_variation = true
 end
 
-local function humanize_corpse(corpse, person)
-  corpse.animation = corpse_variations(person)
+local function humanize_corpse(corpse, look)
+  corpse.animation = corpse_variations(look)
   corpse.decay_animation = nil
   corpse.use_decay_layer = false
   corpse.direction_shuffle = nil
@@ -136,15 +180,16 @@ local function humanize_corpse(corpse, person)
   end
 end
 
-for name, person in pairs(people) do
+for name, person in pairs(definitions.people) do
   local unit = data.raw["unit"][name]
   if unit then
-    humanize_unit(unit, person)
+    local look = util.merge({definitions.tiers[person.tier], person})
+    humanize_unit(unit, look)
     local corpse_names = type(unit.corpse) == "table" and unit.corpse or {unit.corpse}
     for _, corpse_name in pairs(corpse_names) do
       local corpse = data.raw["corpse"][corpse_name]
       if corpse then
-        humanize_corpse(corpse, person)
+        humanize_corpse(corpse, look)
       end
     end
   end

@@ -11,23 +11,34 @@ pushed out look like us.
 The mod uses only assets that ship with the game. Enemy people are built from the engineer's
 own sprites, varied by size, clothing colour and armor.
 
-## Current state (0.1.0)
+## Current state (0.2.0)
 
 | Enemy | Looks like | Attack |
 | --- | --- | --- |
-| Small / medium / big / behemoth biter | Engineer body at 0.8 / 0.95 / 1.1 / 1.35 size, no armor / heavy armor / power armor / power armor | Pickaxe swing |
-| Small / medium / big / behemoth spitter | Same sizes and armor, different clothing colours | Aims a gun (still fires acid) |
-| Biter and spitter corpses | Fallen engineer, two random poses, red blood | |
+| Small / medium / big / behemoth biter | Engineer body at 0.85 / 0.95 / 1.05 / 1.15 size; no armor / heavy armor / power armor / darkened power armor | Pickaxe swing, pickaxe sounds |
+| Small / medium / big / behemoth spitter | Same sizes and armor, different clothing colours | Aims a gun, gunshot sound (still fires acid) |
+| Biter and spitter corpses | Fallen engineer, two random poses, each with their own shade of clothing colour, red blood pools | |
 
-Still bugs: spawners, worms, icons, names, sounds and death effects. See the roadmap below.
+Enemies bleed red, walk with footsteps, and no longer screech or call. Their icons show the
+engineer with an armor badge for the tier and a gun badge for spitters. The game's names
+("Small biter") are kept on purpose: the dehumanizing label next to a human body is part of
+the commentary.
+
+Design rules so far: body size stays within 20% of the engineer, and tiers are told apart
+mainly by armor and clothing colour.
+
+Still bugs: spawners, worms, and the spitters' acid. See the roadmap below.
 
 ## Project layout
 
 ```
 People-Hate-Me/              the mod itself (this folder is what Factorio loads)
   info.json                  mod name, version, Factorio version, dependencies
+  definitions.lua            size, armor and colour of every enemy type (shared by both stages)
   data.lua                   data stage entry point
-  prototypes/people.lua      redraws biters and spitters as people
+  prototypes/people.lua      redraws biters and spitters as people: sprites, icons, sounds
+  prototypes/gore.lua        recolours blood and gore red
+  control.lua                gives every corpse its own shade of clothing colour
   scenarios/gallery/         lineup of every enemy type, used for testing
   changelog.txt              shown in-game and on the mod portal
 tools/                       PowerShell helpers (see below)
@@ -42,7 +53,7 @@ legacy/2023-attempt/         the original 2023 attempt (Factorio 1.1), kept for 
   `data-final-fixes.lua`) mods edit `data.raw`, the table of every prototype (entity
   definitions, sprites, sounds). All visual changes in this mod happen here.
 - In the **control stage** (`control.lua`) scripts react to events while a game is running.
-  This mod has no `control.lua` yet; only the gallery scenario has one.
+  Prototypes can't change per entity, so anything individual (like corpse colours) happens here.
 - The base game's own Lua files are the best reference. They live in
   `<Factorio>/data/base/prototypes`, and the full API docs are in `<Factorio>/doc-html`.
 
@@ -69,8 +80,12 @@ If Factorio is installed somewhere else, set `FACTORIO_EXE` to the full path of 
 ## Roadmap
 
 1. Done: biters and spitters drawn as people, with human corpses.
-2. Icons, names and descriptions, footstep and voice sounds, red blood on death.
+2. Done: red blood and gore, human icons, footsteps and human sounds, individually shaded corpses.
 3. Worms become defensive positions (gun turret graphics).
 4. Spawners become settlements, built from existing structures like the market.
 5. Spitter acid becomes gunfire.
 6. Expansion, attacks and other behaviour framed as a civilization reacting to the factory.
+
+Idea for later: living people can't vary individually because one prototype has one look.
+Hidden look-alike variants of each enemy, swapped in when they spawn, would allow it, at the
+cost of extra entries in kill statistics.

@@ -1,4 +1,16 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.2.0
+Date: 2026-11-06
+  Features:
+    - Blood and gore from wounded and killed enemies is red.
+    - Every fallen person gets their own shade of their group's clothing colour.
+    - Enemy icons show the engineer, badged with the tier's armor and, for spitters, a gun.
+    - Enemies make footsteps instead of skittering, biters' attacks sound like pickaxe strikes, and spitters fire with a gunshot.
+    - Removed the bug screeches and calls. People die without a scream.
+  Changes:
+    - Body sizes stay within 20% of the engineer: 0.85, 0.95, 1.05 and 1.15.
+    - Behemoths wear darkened power armor so they stand apart from big enemies without needing extra size.
+---------------------------------------------------------------------------------------------------
 Version: 0.1.0
 Date: 2026-11-06
   Features:

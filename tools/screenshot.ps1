@@ -8,7 +8,7 @@ Assert-FactorioNotRunning
 Initialize-DevMods
 $exe = Get-FactorioExe
 
-$names = @("overview.png", "standing.png", "fighting.png", "fallen.png")
+$names = @("overview.png", "standing.png", "fighting.png", "fallen.png", "aftermath.png")
 $outputDir = Join-Path $UserData "script-output\people-hate-me"
 $destination = Join-Path $DevRoot "screenshots"
 New-Item -ItemType Directory -Force -Path $destination | Out-Null
