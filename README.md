@@ -27,8 +27,14 @@ the commentary.
 Settings (Settings > Mod settings > Startup): **Gore**, on by default. Turning it off stops
 flesh being thrown when enemies die; the blood stays.
 
-Design rules so far: body size stays within 20% of the engineer, and tiers are told apart
-mainly by armor and clothing colour.
+Design rules so far:
+
+- Body size stays within 20% of the engineer, and tiers are told apart mainly by armor and
+  clothing colour.
+- Use the base game's own graphics wherever possible.
+- Anything built from them must not look like an existing object. Combine pieces of several
+  assets, or change one enough that it reads as something else. A resize or recolour alone
+  isn't enough: an enlarged stone furnace still looks like a stone furnace.
 
 Still bugs: spawners, worms, and the spitters' acid. See [TODO.md](TODO.md).
 

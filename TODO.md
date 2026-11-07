@@ -51,19 +51,26 @@ civilization. This file is the working list for getting there.
 
 To see what base-game assets are available for these, run `tools\screenshot.ps1 asset-catalog`
 (everything labelled, plus kitbash examples) and `tools\screenshot.ps1 encampment-sketch`
-(candidate settlements and defensive positions next to the bug versions).
+(candidate settlements and defensive positions next to the bug versions). Whatever is chosen
+must not look like an existing object (see the design rules in the README), so a market, gun
+turret, wall or furnace used as it is doesn't qualify.
 
 1. **Acid damage type.** Keep acid, so game balance is untouched, or switch to physical once
    it looks like gunfire, which changes how armor and resistances work against it?
 2. **Worms become defensive positions.** The gun turret moves through the same states a worm
    does (hidden, rising, aiming, firing, lowering), and dead worms could leave gun-turret
-   wreckage. Open questions: turret graphics, or a person dug in behind a ring of wall pieces?
-   Does the 20% size rule apply to structures, given that worms vary in size much more than
-   biters?
-3. **Spawners become settlements.** Composite buildings from base assets (market, stone
-   furnaces, wooden chests, wooden poles, lamps), people walking out of them, and razed
-   remnants with scorch marks when destroyed. Open questions: what a settlement looks like,
-   and how biter settlements differ from spitter ones (for example a workshop and an armoury).
+   wreckage. The turret's own graphics and plain stone walls are out under the design rule.
+   Current candidate: a person dug in behind a barricade of cut tree trunks, wall rubble and a
+   broken crate (the asset catalogue's kitbash row). Open questions: how the barricade scales
+   across the four worm sizes, and whether the 20% size rule applies to structures, given
+   that worms vary in size much more than biters.
+3. **Spawners become settlements.** People walk out of them, and they leave razed remnants
+   with scorch marks when destroyed. The market used as it is is out under the design rule.
+   Current candidate: a palisade of cut tree trunks around straw-roofed stone huts (a stone
+   furnace's body with tree foliage tinted as thatch), a campfire and crates (the asset
+   catalogue's kitbash row). Open questions: whether that look is right, the huts' stone is
+   still too yellow, and how biter settlements differ from spitter ones (for example a
+   workshop and an armoury).
 4. **Individual looks for living people.** One prototype has one look, so individuality needs
    two or three look-alike variants of each enemy type (different shades, with or without a
    helmet), swapped in at spawn. The cost is extra rows in the kill statistics. Worth it?

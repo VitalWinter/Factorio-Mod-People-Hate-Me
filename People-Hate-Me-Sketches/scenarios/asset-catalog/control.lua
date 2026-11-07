@@ -14,6 +14,8 @@ local screenshots =
   {tick = 170, path = "combinations.png", position = {0, 44}, resolution = {2944, 1568}},
   {tick = 175, path = "combinations-night.png", position = {0, 44}, resolution = {2944, 1568}, daytime = 0.5},
   {tick = 180, path = "buildings-night.png", position = {0, -47}, resolution = {2944, 1088}, daytime = 0.5},
+  {tick = 185, path = "kitbash.png", position = {0, 49.5}, resolution = {2944, 640}},
+  {tick = 190, path = "kitbash-night.png", position = {0, 49.5}, resolution = {2944, 640}, daytime = 0.5},
 }
 
 local function text(surface, value, position, options)
@@ -81,6 +83,10 @@ end
 
 local function sprite(surface, name, position)
   rendering.draw_sprite{sprite = name, surface = surface, target = position, render_layer = "object"}
+end
+
+local function glow(surface, position, scale)
+  rendering.draw_light{sprite = "utility/light_medium", surface = surface, target = position, scale = scale, intensity = 0.6, color = {1, 0.7, 0.4}}
 end
 
 -- Shorthands for catalogue entries.
@@ -366,53 +372,57 @@ local groups =
     },
   },
   {
-    heading = "Kitbashed sprites (cropped, scaled, tinted, layered)",
+    heading = "Kitbashed from several assets (cropped, scaled, tinted, layered)",
     y = 43,
     rows =
     {
       {
-        y = 49, slot = 7, label_offset = 3,
+        y = 49, slot = 8, label_offset = 3.2,
         entries =
         {
           {
-            label = "furnace at normal size",
-            build = function(surface, x, y)
-              place(surface, "stone-furnace", {x, y})
-              person(surface, "small-biter", {x + 2, y + 0.5})
-            end,
-          },
-          {
-            label = "hut: furnace 1.5x, warmer stone",
+            label = "hut: furnace + straw roof",
             build = function(surface, x, y)
               sprite(surface, "phm-sketch-hut", {x, y})
-              person(surface, "small-biter", {x + 2.4, y + 0.8})
-              rendering.draw_light{sprite = "utility/light_medium", surface = surface, target = {x, y + 0.8}, scale = 0.8, intensity = 0.6, color = {1, 0.7, 0.4}}
+              glow(surface, {x, y + 0.8}, 0.8)
+              person(surface, "small-biter", {x + 2.2, y + 0.8})
             end,
           },
           {
-            label = "graves: wall piece 0.4x",
+            label = "hut: older straw",
             build = function(surface, x, y)
-              for dx = -1, 1 do
-                for dy = 0, 1 do
-                  sprite(surface, "phm-sketch-gravestone", {x + dx * 0.9, y + dy * 1.1 - 0.3})
-                end
-              end
+              sprite(surface, "phm-sketch-hut-old", {x, y})
+              glow(surface, {x, y + 0.8}, 0.8)
             end,
           },
           {
-            label = "market tinted brown",
-            build = function(surface, x, y) sprite(surface, "phm-sketch-market-wood", {x, y}) end,
-          },
-          {
-            label = "stacked crates",
-            build = function(surface, x, y) sprite(surface, "phm-sketch-crate-stack", {x, y}) end,
-          },
-          {
-            label = "palisade: wooden pole 0.6x",
+            label = "campfire: stones, planks, flame",
             build = function(surface, x, y)
-              for i = 0, 9 do
-                sprite(surface, "phm-sketch-stake", {x - 1.6 + i * 0.36, y + 0.6})
-              end
+              sprite(surface, "phm-sketch-campfire", {x, y})
+              glow(surface, {x, y}, 1)
+              person(surface, "small-spitter", {x - 1.3, y + 0.3})
+              person(surface, "small-biter", {x + 1.3, y - 0.2})
+            end,
+          },
+          {
+            label = "barricade: posts, rubble, crate",
+            build = function(surface, x, y)
+              person(surface, "small-spitter", {x - 0.4, y - 0.9})
+              sprite(surface, "phm-sketch-barricade", {x, y})
+            end,
+          },
+          {
+            label = "palisade: cut tree trunks",
+            build = function(surface, x, y) sprite(surface, "phm-sketch-palisade", {x, y}) end,
+          },
+          {
+            label = "compound",
+            build = function(surface, x, y)
+              sprite(surface, "phm-sketch-compound", {x, y})
+              glow(surface, {x - 1, y + 0.6}, 0.7)
+              glow(surface, {x + 1.1, y + 0.4}, 0.7)
+              glow(surface, {x + 0.1, y + 1}, 1)
+              person(surface, "medium-biter", {x + 1.5, y + 1.2})
             end,
           },
         },
