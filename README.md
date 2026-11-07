@@ -36,8 +36,9 @@ Design rules so far:
   assets, or change one enough that it reads as something else. Resizing is fine, but it
   can't be what makes the difference: an enlarged stone furnace still looks like a stone
   furnace.
-- The people's world is as modern as their gear: camouflaged, fortified outposts built from
-  machinery and salvage, not villages of huts.
+- The people's world is as modern as their gear, and it's a civilization, not an army:
+  spawners become town buildings (houses, flats, halls), not huts or armouries. Only the
+  worms are military, as defensive positions.
 - A replacement keeps the footprint (collision box) of the structure it replaces.
 
 Still bugs: spawners, worms, and the spitters' acid. See [TODO.md](TODO.md).

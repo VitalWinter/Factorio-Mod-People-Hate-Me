@@ -5,12 +5,11 @@
 
 require("util")
 
-local graphics = "__base__/graphics/"
-
--- A cropped piece of a base-game image. Its centre sits at shift (in tiles) from the sprite's
--- position, and it covers width * scale / 32 tiles.
+-- A cropped piece of an image. Its centre sits at shift (in tiles) from the sprite's position, and
+-- it covers width * scale / 32 tiles. Paths without a mod prefix are in the base game's graphics.
 local function part(file, x, y, width, height, scale, shift, extra)
-  return util.merge{{filename = graphics .. file, x = x, y = y, width = width, height = height, scale = scale, shift = shift}, extra or {}}
+  local filename = file:find("^__") and file or "__base__/graphics/" .. file
+  return util.merge{{filename = filename, x = x, y = y, width = width, height = height, scale = scale, shift = shift}, extra or {}}
 end
 
 local function add(layers, more)
@@ -20,48 +19,92 @@ local function add(layers, more)
   return layers
 end
 
--- Base-game pictures with the shifts they have at their normal scale of 0.5.
-local pictures =
-{
-  assembler = {file = "entity/assembling-machine-1/assembling-machine-1-base.png", width = 198, height = 184, shift = {0, 0.125}},
-  assembler_shadow = {file = "entity/assembling-machine-1/assembling-machine-1-shadow.png", width = 50, height = 166, shift = {1.39, 0.016}, shadow = true},
-  electric_furnace = {file = "entity/electric-furnace/electric-furnace.png", width = 239, height = 219, shift = {0.023, 0.18}},
-  electric_furnace_shadow = {file = "entity/electric-furnace/electric-furnace-shadow.png", width = 227, height = 171, shift = {0.35, 0.24}, shadow = true},
-  steel_furnace = {file = "entity/steel-furnace/steel-furnace.png", width = 171, height = 174, shift = {-0.039, 0.0625}},
-  steel_furnace_shadow = {file = "entity/steel-furnace/steel-furnace-shadow.png", width = 277, height = 85, shift = {1.227, 0.35}, shadow = true},
-  turret_mount = {file = "entity/gun-turret/gun-turret-base.png", width = 150, height = 118, shift = {0.016, -0.031}},
-  cargo_pod = {file = "entity/crash-site-chests/crash-site-chest-1.png", width = 120, height = 76, shift = {0.0625, 0.25}},
-  cargo_pod_2 = {file = "entity/crash-site-chests/crash-site-chest-2.png", width = 116, height = 88, shift = {0, 0.25}},
-  hull_plate = {file = "entity/crash-site-spaceship/spaceship-wreck-medium-1.png", width = 228, height = 120, shift = {-0.44, -0.125}},
-  -- The pole sheet holds four directions side by side; this is the first.
-  mast = {file = "entity/medium-electric-pole/medium-electric-pole.png", width = 84, height = 252, shift = {0.11, -1.375}},
-  lamp = {file = "entity/small-lamp/lamp.png", width = 83, height = 70, shift = {0.008, 0.094}},
-  lamp_shadow = {file = "entity/small-lamp/lamp-shadow.png", width = 76, height = 47, shift = {0.125, 0.148}, shadow = true},
-  steel_chest = {file = "entity/steel-chest/steel-chest.png", width = 64, height = 80, shift = {-0.008, -0.016}},
-  steel_chest_shadow = {file = "entity/steel-chest/steel-chest-shadow.png", width = 110, height = 46, shift = {0.383, 0.25}, shadow = true},
-  crate = {file = "entity/wooden-chest/wooden-chest.png", width = 62, height = 72, shift = {0.016, -0.063}},
-  crate_shadow = {file = "entity/wooden-chest/wooden-chest-shadow.png", width = 104, height = 40, shift = {0.3125, 0.203}, shadow = true},
-  -- The wall sheet holds two variations side by side; this is the first.
-  headstone = {file = "entity/wall/wall-single.png", width = 64, height = 86, shift = {0, -0.156}},
-  wall_shadow = {file = "entity/wall/wall-single-shadow.png", width = 98, height = 60, shift = {0.3125, 0.53}, shadow = true},
-}
-
--- A base-game picture scaled by k (its shift too, so it keeps its footing) and moved by offset.
-local function piece(name, k, offset, extra)
-  local picture = pictures[name]
-  local shift = {picture.shift[1] * k + offset[1], picture.shift[2] * k + offset[2]}
-  return part(picture.file, 0, 0, picture.width, picture.height, 0.5 * k, shift, util.merge{{draw_as_shadow = picture.shadow}, extra or {}})
+-- A w by h tile rectangle cut from the game's 10x10 white square. Crops are whole pixels, so the
+-- proportions are approximate.
+local function rect(x, y, w, h, tint, extra)
+  local pw, ph = 10, 10
+  if w >= h then
+    ph = math.max(1, math.floor(10 * h / w + 0.5))
+  else
+    pw = math.max(1, math.floor(10 * w / h + 0.5))
+  end
+  return part("__core__/graphics/white-square.png", 0, 0, pw, ph, w * 32 / pw, {x, y}, util.merge{{tint = tint}, extra or {}})
 end
 
-local drab = {0.82, 0.84, 0.74}
-local olive = {0.55, 0.62, 0.38}
-local dark_olive = {0.42, 0.47, 0.3}
+local roofs =
+{
+  stone_path = "terrain/stone-path/stone-path-4.png",
+  concrete = "terrain/concrete/concrete.png",
+  refined_concrete = "terrain/concrete/refined-concrete.png",
+}
+
+local terracotta = {0.95, 0.72, 0.6}
+local brick = {0.8, 0.55, 0.45}
+local plaster = {1, 0.95, 0.85}
+local glass = {0.22, 0.26, 0.3}
+local lamplight = {1, 0.8, 0.5}
+local wood = {0.3, 0.2, 0.13}
 local earth = {0.85, 0.8, 0.68}
 
--- Cut foliage laid over a roof as camouflage: the pale tree-09 leaves, which the game itself tints
--- for its tree colours.
-local function camo(x, y, width, tint)
-  return part("entity/tree/09/tree-09-a-leaves.png", 20, 0, 310, 150, width * 32 / 310, {x, y}, {tint = tint or olive})
+-- A box building on the footprint centred at x, y: spec.columns wall segments of k tiles across,
+-- spec.depth tiles deep, spec.floors storeys of k tiles high. The front wall is the stone wall's
+-- face, with its cap as the cornice; the roof is a floor tile's texture, raised by the wall's
+-- height; an assembler's shadow falls to the east.
+local function building(x, y, spec)
+  local k = spec.k or 1
+  local width = spec.columns * k
+  local front = y + spec.depth / 2
+  local height = spec.floors * k
+  local shadow_scale = (spec.depth + height + 0.25 * k) * 32 / 166
+  local layers =
+  {
+    part("entity/assembling-machine-1/assembling-machine-1-shadow.png", 0, 0, 50, 166, shadow_scale,
+      {x + width / 2 + 50 * shadow_scale / 64 - 0.05, front - (spec.depth + height) / 2}, {draw_as_shadow = true}),
+    part(roofs[spec.roof], 0, 0, math.floor(width * 64 + 0.5), math.floor(spec.depth * 64 + 0.5), 0.5,
+      {x, front - height - spec.depth / 2}, {tint = spec.roof_tint}),
+  }
+  for floor = 0, spec.floors - 1 do
+    -- The top storey keeps the wall's cap; the wall sheet has six variations side by side.
+    local top = floor == spec.floors - 1 and 0 or 16
+    local h = 80 - top
+    for i = 0, spec.columns - 1 do
+      local variation = (i + floor * 2) % 6
+      layers[#layers + 1] = part("entity/wall/wall-horizontal.png", variation * 64, top, 64, h, 0.5 * k,
+        {x - width / 2 + k / 2 + i * k, front - floor * k - h * k / 128}, {tint = spec.wall_tint})
+    end
+  end
+  return layers
+end
+
+-- Glass, plus the same pane lit from inside added to lit. Script-drawn sprites ignore
+-- draw_as_light, so the lit panes are a separate sprite that the sketch shows at night.
+local function pane(x, y, w, h, lit)
+  lit[#lit + 1] = rect(x, y, w, h, lamplight)
+  return {rect(x, y, w, h, glass)}
+end
+
+-- A window in a storey that stands on bottom.
+local function window(x, bottom, lit, k)
+  k = k or 1
+  return pane(x, bottom - 0.55 * k, 0.26 * k, 0.34 * k, lit)
+end
+
+local function door(x, bottom, k)
+  k = k or 1
+  return {rect(x, bottom - 0.38 * k, 0.36 * k, 0.6 * k, wood)}
+end
+
+-- The steel furnace's stovepipe, standing on a roof at bottom.
+local function chimney(x, bottom)
+  return {part("entity/steel-furnace/steel-furnace.png", 113, 0, 28, 52, 0.5, {x, bottom - 0.41})}
+end
+
+local function lamp(x, y)
+  return
+  {
+    part("entity/small-lamp/lamp-shadow.png", 0, 0, 76, 47, 0.5, {x + 0.125, y + 0.148}, {draw_as_shadow = true}),
+    part("entity/small-lamp/lamp.png", 0, 0, 83, 70, 0.5, {x + 0.008, y + 0.094}),
+  }
 end
 
 -- The lower trunk of a tree-02, below its branches, as a log post standing on y.
@@ -94,15 +137,30 @@ local bank_rocks =
   {file = "decorative/sand-rock/medium-sand-rock-05.png", width = 106, height = 76},
 }
 
+local function bank_rock(i, x, y)
+  local rock = bank_rocks[i % #bank_rocks + 1]
+  return part(rock.file, 0, 0, rock.width, rock.height, 0.26, {x, y}, {tint = earth})
+end
+
 -- A low bank of earth: desert rocks overlapping in a row.
 local function earth_bank(x1, x2, y)
   local layers = {}
   local i = 0
   for x = x1, x2 + 0.001, 0.38 do
-    local rock = bank_rocks[i % #bank_rocks + 1]
-    layers[#layers + 1] = part(rock.file, 0, 0, rock.width, rock.height, 0.26, {x, y + 0.04 * (i % 2)}, {tint = earth})
+    layers[#layers + 1] = bank_rock(i, x, y + 0.04 * (i % 2))
     i = i + 1
   end
+  return layers
+end
+
+-- A horseshoe of earth bank around the left, front and right, open at the back.
+local function earth_ring(rx, ry)
+  local layers = {}
+  for i = 0, 6 do
+    local angle = math.rad(190 - 200 * i / 6)
+    layers[#layers + 1] = bank_rock(i, rx * math.cos(angle), ry * math.sin(angle))
+  end
+  table.sort(layers, function(a, b) return a.shift[2] < b.shift[2] end)
   return layers
 end
 
@@ -128,59 +186,56 @@ local function campfire(x, y)
   })
 end
 
-local function lamp(x, y)
-  return {piece("lamp_shadow", 1, {x, y}), piece("lamp", 1, {x, y})}
-end
-
-local function steel_chest(x, y, k)
-  return {piece("steel_chest_shadow", k or 1, {x, y}), piece("steel_chest", k or 1, {x, y})}
-end
-
 local function headstone(x, y)
-  return {piece("wall_shadow", 0.5, {x, y}), piece("headstone", 0.5, {x, y}, {tint = {0.95, 0.94, 0.9}})}
+  return
+  {
+    part("entity/wall/wall-single-shadow.png", 0, 0, 98, 60, 0.25, {x + 0.156, y + 0.265}, {draw_as_shadow = true}),
+    part("entity/wall/wall-single.png", 0, 0, 64, 86, 0.25, {x, y - 0.078}, {tint = {0.95, 0.94, 0.9}}),
+  }
 end
 
--- Biter nest (5x5): a workshop. An assembler's housing with its machinery hidden under camouflage,
--- a radio mast, crates and a salvaged cargo pod.
-local workshop =
-{
-  piece("mast", 0.85, {1.55, -1.3}),
-  piece("assembler_shadow", 1, {0, -0.3}),
-  piece("assembler", 1, {0, -0.3}, {tint = drab}),
-  camo(0, -1.15, 3.3),
-  piece("crate_shadow", 1, {-1.6, 1.5}),
-  piece("crate", 1, {-1.75, 1.45}),
-  piece("crate", 1, {-1.25, 1.65}),
-  piece("cargo_pod", 0.8, {1.3, 1.55}),
-}
+-- Biter nest (5x5): two houses with tiled roofs and chimneys, and a street lamp.
+local houses_lit = {}
+local houses = building(-1, -0.9, {columns = 2, depth = 2, floors = 1, roof = "stone_path", roof_tint = terracotta, wall_tint = plaster})
+add(houses, chimney(-0.4, -2))
+add(houses, window(-1.5, 0.1, houses_lit))
+add(houses, window(-0.5, 0.1, houses_lit))
+add(houses, door(-1, 0.1))
+add(houses, building(1.1, 1, {columns = 2, depth = 1.5, floors = 1, roof = "stone_path", roof_tint = brick, wall_tint = plaster}))
+add(houses, chimney(1.6, -0.4))
+add(houses, window(0.6, 1.75, houses_lit))
+add(houses, door(1.5, 1.75))
+add(houses, lamp(-1.8, 1.6))
 
--- Spitter nest (5x5): an armoury. An electric furnace's body as a bunker under camouflage, with
--- ammunition boxes, a lamp, and earth banks either side of the door.
-local armoury =
-{
-  piece("electric_furnace_shadow", 0.85, {0, -0.45}),
-  piece("electric_furnace", 0.85, {0, -0.45}, {tint = drab}),
-  camo(0, -1.45, 3.1, dark_olive),
-}
-add(armoury, steel_chest(1.85, -0.2))
-add(armoury, steel_chest(1.85, 0.45))
-add(armoury, earth_bank(-1.6, -0.6, 1.75))
-add(armoury, earth_bank(0.6, 1.6, 1.75))
-add(armoury, lamp(-1.9, 0.6))
+-- Spitter nest (5x5): a two-storey block of flats with a concrete roof and chimneys.
+local flats_lit = {}
+local flats = building(0, 0.2, {columns = 4, depth = 2, floors = 2, roof = "concrete"})
+add(flats, chimney(-1.3, -1.3))
+add(flats, chimney(1.3, -1.3))
+for _, x in pairs{-1.5, -0.5, 0.5, 1.5} do
+  add(flats, window(x, 0.2, flats_lit))
+end
+for _, x in pairs{-1.5, 0.5, 1.5} do
+  add(flats, window(x, 1.2, flats_lit))
+end
+add(flats, door(-0.5, 1.2))
+add(flats, lamp(1.9, 1.9))
 
--- Another nest option (5x5): two small cabins, steel furnaces under camouflage, behind a palisade.
-local cabins = post_row(-2, 2, -1.6, 0.32)
-add(cabins,
-{
-  piece("steel_furnace_shadow", 0.75, {-1, -0.4}),
-  piece("steel_furnace", 0.75, {-1, -0.4}, {tint = drab}),
-  camo(-1.1, -1.05, 1.9),
-  piece("steel_furnace_shadow", 0.75, {1.1, 0.3}),
-  piece("steel_furnace", 0.75, {1.1, 0.3}, {tint = drab}),
-  camo(1, -0.35, 1.9, dark_olive),
-  piece("cargo_pod_2", 0.7, {-1.2, 1.4}),
-  piece("crate", 1, {0.1, 1.6}),
-})
+-- Another nest option (5x5): a single-storey hall with skylights and double doors.
+local hall_lit = {}
+local hall = building(0, -0.2, {columns = 4, depth = 3, floors = 1, roof = "refined_concrete", wall_tint = plaster})
+for _, y in pairs{-1.8, -1.1} do
+  for _, x in pairs{-0.9, -0.3, 0.3, 0.9} do
+    add(hall, pane(x, y, 0.4, 0.26, hall_lit))
+  end
+end
+for _, x in pairs{-1.5, -0.9, 0.9, 1.5} do
+  add(hall, window(x, 1.3, hall_lit))
+end
+add(hall, door(-0.2, 1.3))
+add(hall, door(0.2, 1.3))
+add(hall, lamp(-1.9, 1.9))
+add(hall, lamp(1.9, 1.9))
 
 -- A graveyard (5x5): two rows of headstones behind a palisade, with a lamp.
 local graveyard = post_row(-2, 2, -1.7, 0.32)
@@ -191,18 +246,18 @@ for _, y in pairs{-0.6, 0.6} do
 end
 add(graveyard, lamp(1.9, 1.5))
 
--- Worms become firing positions, each within its worm's footprint.
-local small_position = {camo(0, -0.5, 1.5), piece("hull_plate", 0.55, {0.15, 0.4})}
+-- Worms become defensive positions, each within its worm's footprint.
+local small_position = earth_ring(0.42, 0.35)
 
-local medium_position = {camo(0, -0.65, 2, dark_olive)}
-add(medium_position, steel_chest(0.85, -0.15, 0.8))
-add(medium_position, earth_bank(-0.5, 0, 0.55))
-add(medium_position, {piece("hull_plate", 0.5, {0.75, 0.55})})
+local medium_position = building(0, 0.1, {columns = 2, depth = 1.2, floors = 1, k = 0.8, roof = "refined_concrete"})
+add(medium_position, {rect(0, 0.35, 1, 0.1, {0.05, 0.05, 0.05})})
 
-local big_position = post_row(-1.2, 1.2, -0.75, 0.26)
-add(big_position, {camo(0, -1.3, 2.8, dark_olive), piece("turret_mount", 0.9, {0, 0.05}, {tint = drab})})
-add(big_position, earth_bank(-0.8, 0.1, 0.8))
-add(big_position, {piece("hull_plate", 0.5, {0.85, 0.85})})
+local big_position = building(0, 0.2, {columns = 3, depth = 1.6, floors = 1, k = 0.8, roof = "concrete"})
+add(big_position,
+{
+  rect(-0.3, 0.6, 1.2, 0.1, {0.05, 0.05, 0.05}),
+  part("entity/gun-turret/gun-turret-base.png", 0, 0, 150, 118, 0.4, {0, -0.65}),
+})
 
 local function sprite(name, layers)
   return {type = "sprite", name = "phm-sketch-" .. name, layers = layers}
@@ -210,9 +265,12 @@ end
 
 data:extend
 {
-  sprite("workshop", workshop),
-  sprite("armoury", armoury),
-  sprite("cabins", cabins),
+  sprite("houses", houses),
+  sprite("houses-lit", houses_lit),
+  sprite("flats", flats),
+  sprite("flats-lit", flats_lit),
+  sprite("hall", hall),
+  sprite("hall-lit", hall_lit),
   sprite("graveyard", graveyard),
   sprite("position-small", small_position),
   sprite("position-medium", medium_position),

@@ -6,6 +6,8 @@
 local area = {{-26, -20}, {26, 22}}
 local column_x = {-20, -12, -4, 4, 12, 20}
 local done_tick = 200
+-- Between the day and night shots of the settlements.
+local lights_on_tick = 128
 
 local screenshots =
 {
@@ -31,8 +33,15 @@ local function person(surface, name, position)
   unit.disabled_by_script = true
 end
 
+-- A sketch sprite, and its lit windows if it has any. The windows stay hidden until lights_on_tick.
 local function sprite(surface, name, position)
   rendering.draw_sprite{sprite = "phm-sketch-" .. name, surface = surface, target = position, render_layer = "object"}
+  local lit = "phm-sketch-" .. name .. "-lit"
+  if helpers.is_valid_sprite_path(lit) then
+    local windows = storage.windows
+    windows[#windows + 1] = rendering.draw_sprite{sprite = lit, surface = surface, target = position, render_layer = "object", visible = false}
+    windows[#windows + 1] = rendering.draw_light{sprite = lit, surface = surface, target = position, intensity = 0.9, visible = false}
+  end
 end
 
 local function glow(surface, position, scale)
@@ -91,29 +100,35 @@ local settlements =
 {
   {label = "biter nest (now)", structure = "biter-spawner", build = now("biter-spawner")},
   {
-    label = "workshop",
+    label = "houses",
     structure = "biter-spawner",
     build = function(surface, x, y)
-      sprite(surface, "workshop", {x, y})
-      person(surface, "small-biter", {x + 0.2, y + 1.5})
+      tiles(surface, "stone-path", {x - 2, y - 2}, 4, 4)
+      sprite(surface, "houses", {x, y})
+      glow(surface, {x - 1.8, y + 1.5}, 0.8)
+      person(surface, "small-biter", {x + 1.5, y + 2.1})
     end,
   },
   {label = "spitter nest (now)", structure = "spitter-spawner", build = now("spitter-spawner")},
   {
-    label = "armoury",
+    label = "flats",
     structure = "spitter-spawner",
     build = function(surface, x, y)
-      sprite(surface, "armoury", {x, y})
-      glow(surface, {x - 1.9, y + 0.5}, 0.8)
-      person(surface, "small-spitter", {x, y + 1.3})
+      tiles(surface, "stone-path", {x - 2, y - 2}, 4, 4)
+      sprite(surface, "flats", {x, y})
+      glow(surface, {x + 1.9, y + 1.8}, 0.8)
+      person(surface, "small-spitter", {x - 1.1, y + 2.2})
     end,
   },
   {
-    label = "cabins (another nest option)",
+    label = "hall (another nest option)",
     structure = "biter-spawner",
     build = function(surface, x, y)
-      sprite(surface, "cabins", {x, y})
-      person(surface, "medium-biter", {x - 0.2, y + 0.7})
+      tiles(surface, "concrete", {x - 2, y - 2}, 4, 4)
+      sprite(surface, "hall", {x, y})
+      glow(surface, {x - 1.9, y + 1.8}, 0.8)
+      glow(surface, {x + 1.9, y + 1.8}, 0.8)
+      person(surface, "medium-biter", {x + 0.6, y + 2.3})
     end,
   },
   {
@@ -134,29 +149,28 @@ local positions =
 {
   {label = "small worm (now)", structure = "small-worm-turret", build = now("small-worm-turret")},
   {
-    label = "small position",
+    label = "small: earth-bank pit",
     structure = "small-worm-turret",
     build = function(surface, x, y)
-      person(surface, "small-spitter", {x, y - 0.1})
+      person(surface, "small-spitter", {x, y})
       sprite(surface, "position-small", {x, y})
     end,
   },
   {label = "medium worm (now)", structure = "medium-worm-turret", build = now("medium-worm-turret")},
   {
-    label = "medium position",
+    label = "medium: pillbox",
     structure = "medium-worm-turret",
     build = function(surface, x, y)
-      person(surface, "medium-spitter", {x - 0.3, y})
       sprite(surface, "position-medium", {x, y})
     end,
   },
   {label = "big worm (now)", structure = "big-worm-turret", build = now("big-worm-turret")},
   {
-    label = "big position",
+    label = "big: bunker, gun on the roof",
     structure = "big-worm-turret",
     build = function(surface, x, y)
       sprite(surface, "position-big", {x, y})
-      person(surface, "big-spitter", {x, y + 0.1})
+      person(surface, "big-spitter", {x, y - 0.55})
     end,
   },
 }
@@ -213,6 +227,7 @@ local function build_row(surface, entries, y, label_offset)
 end
 
 local function build_sketch()
+  storage.windows = {}
   local surface = game.surfaces["nauvis"]
   prepare_ground(surface)
   game.forces["enemy"].set_cease_fire("player", true)
@@ -253,6 +268,11 @@ script.on_event(defines.events.on_tick, function(event)
         force_render = true,
         daytime = shot.daytime or 0,
       }
+    end
+  end
+  if event.tick == lights_on_tick then
+    for _, window in pairs(storage.windows) do
+      window.visible = true
     end
   end
   if event.tick == done_tick then

@@ -53,27 +53,27 @@ To see what base-game assets are available for these, run `tools\screenshot.ps1 
 (everything labelled, plus kitbash examples) and `tools\screenshot.ps1 encampment-sketch`
 (candidate settlements and defensive positions next to the bug versions, each outlined with
 the bug structure's collision box). Whatever is chosen follows the design rules in the
-README: modern rather than village-like, built from several assets so it doesn't look like
-an existing object, and within the footprint of what it replaces.
+README: town buildings of a civilization (only the worms are military), built from several
+assets so it doesn't look like an existing object, and within the footprint of what it replaces.
 
 1. **Acid damage type.** Keep acid, so game balance is untouched, or switch to physical once
    it looks like gunfire, which changes how armor and resistances work against it?
 2. **Worms become defensive positions.** Each must fit its worm's collision box. Current
-   candidates (encampment sketch): small, a person behind a plate of ship hull under
-   camouflage; medium, the same with an earth bank and an ammunition box; big, a gun turret's
-   mount ringed by log posts, camouflage and an earth bank, with the gunner standing in it.
+   candidates (encampment sketch): small, a person in a horseshoe pit of earth bank; medium,
+   a concrete pillbox with a firing slit; big, a concrete bunker with a gun turret's mount on
+   the roof and the gunner standing in it.
    Open questions: worms move through states (hidden, rising, aiming, firing, lowering), so
    is the gunner drawn into the picture or a separate person; what's left when one is
    destroyed; and how the behemoth differs from the big one.
 3. **Spawners become settlements.** People walk out of them, and they leave razed remnants
    with scorch marks when destroyed. Each must fit the nest's 4.4 by 4.4 collision box.
-   Current candidates (encampment sketch): biter nest, a workshop (an assembler's housing with
-   its machinery under camouflage, a radio mast, crates and a salvaged cargo pod); spitter
-   nest, an armoury (an electric furnace's body as a bunker under camouflage, ammunition
-   boxes, earth banks and a lamp); a third option, two small cabins behind a palisade. A
-   graveyard (headstones behind a palisade) could stand near settlements. Open questions:
-   whether these looks are right, how lit and lived-in they should feel, and where
-   graveyards appear.
+   Current candidates (encampment sketch) are box buildings: the stone wall's face as each
+   storey's facade with its cap as the cornice, a floor tile's texture as the roof, the steel
+   furnace's stovepipe as a chimney, and panes for windows that light up at night. Biter
+   nest, two houses with tiled roofs; spitter nest, a two-storey block of flats; a third
+   option, a hall with skylights. A graveyard (headstones behind a palisade) could stand near
+   settlements. Open questions: whether these looks are right, whether the bugs' variety
+   (sizes, biter versus spitter) should map to building types, and where graveyards appear.
 4. **Individual looks for living people.** One prototype has one look, so individuality needs
    two or three look-alike variants of each enemy type (different shades, with or without a
    helmet), swapped in at spawn. The cost is extra rows in the kill statistics. Worth it?
