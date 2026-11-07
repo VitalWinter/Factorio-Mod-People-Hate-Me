@@ -9,20 +9,26 @@ visible: the same expansion, pollution and extermination feel different when the
 pushed out look like us.
 
 The mod uses only assets that ship with the game. Enemy people are built from the engineer's
-own sprites, varied by size, clothing colour and armor.
+own sprites, varied by size, clothing colour and armor. Their buildings are kitbashed from
+pieces of other base-game images: stone wall faces, floor tiles, furnace chimneys.
 
-## Current state (0.2.1)
+## Current state (0.3.0)
 
 | Enemy | Looks like | Attack |
 | --- | --- | --- |
 | Small / medium / big / behemoth biter | Engineer body at 0.85 / 0.95 / 1.05 / 1.15 size; no armor / heavy armor / power armor / darkened power armor | Pickaxe swing, pickaxe sounds |
 | Small / medium / big / behemoth spitter | Same sizes and armor, different clothing colours | Aims a gun, gunshot sound (still fires acid) |
 | Biter and spitter corpses | Fallen engineer, two random poses, each with their own shade of clothing colour, red blood pools | |
+| Biter nest | Two houses with tiled roofs and chimneys on a paved lot | People walk out of it |
+| Spitter nest | A two-storey block of flats or a hall with skylights | People walk out of it |
+| Destroyed nest | Burnt-out ruin: broken walls, rubble, fallen roof, a standing chimney, scorched paving | |
+| Small / medium / big / behemoth worm | Earth-bank pit / concrete pillbox / bunker with a gun mount / steel-plated bunker, manned by a gunner dressed like the spitter of that tier | The gunner stands at ease, raises their gun as enemies near, and turns to fire (still acid); the pillbox fires from its slit |
+| Destroyed worm | Wrecked position with the dead gunner, in their own shade | |
 
 Enemies bleed red, walk with footsteps, and no longer screech or call. Their icons show the
-engineer with an armor badge for the tier and a gun badge for spitters. The game's names
-("Small biter") are kept on purpose: the dehumanizing label next to a human body is part of
-the commentary.
+engineer with an armor badge for the tier and a gun badge for spitters. Windows and street
+lamps light up at night. The game's names ("Small biter") are kept on purpose: the
+dehumanizing label next to a human body is part of the commentary.
 
 Settings (Settings > Mod settings > Startup): **Gore**, on by default. Turning it off stops
 flesh being thrown when enemies die; the blood stays.
@@ -41,26 +47,31 @@ Design rules so far:
   worms are military, as defensive positions.
 - A replacement keeps the footprint (collision box) of the structure it replaces.
 
-Still bugs: spawners, worms, and the spitters' acid. See [TODO.md](TODO.md).
+Still bugs: the acid that spitters and worms fire, the creep and mushrooms around nests, and
+the nests' and worms' icons. See [TODO.md](TODO.md).
 
 ## Project layout
 
 ```
 People-Hate-Me/              the mod itself (this folder is what Factorio loads)
   info.json                  mod name, version, Factorio version, dependencies
-  definitions.lua            size, armor and colour of every enemy type (shared by both stages)
+  definitions.lua            size, armor and colour of every enemy type, and who mans each worm (shared by both stages)
   settings.lua               mod settings (the gore toggle)
   data.lua                   data stage entry point
+  prototypes/person.lua      draws a person from the engineer's sprites in a look from definitions.lua
   prototypes/people.lua      redraws biters and spitters as people: sprites, icons, sounds
+  prototypes/kitbash.lua     builds pictures from cropped, scaled, tinted pieces of base-game images
+  prototypes/settlements.lua redraws spawners as town buildings, and their corpses as ruins
+  prototypes/positions.lua   redraws worms as manned defensive positions, and their corpses as wrecks
   prototypes/gore.lua        recolours blood and gore red; removes flesh when gore is off
-  control.lua                gives every corpse its own shade of clothing colour
+  control.lua                gives every fallen person their own shade of clothing colour
   locale/en/                 in-game text for the settings
-  scenarios/gallery/         lineup of every enemy type, used for testing
+  scenarios/gallery/         lineup of every enemy type and structure, used for testing
   changelog.txt              shown in-game and on the mod portal
 People-Hate-Me-Sketches/     development-only companion mod, never packaged or published
-  data.lua                   kitbash experiments: base-game sprites cropped, scaled, tinted, layered
+  data.lua                   kitbash experiments not in the mod yet (graveyard, palisade, campfire)
   scenarios/asset-catalog/   every base-game asset that could be repurposed, labelled
-  scenarios/encampment-sketch/  kitbashed settlements and defensive positions beside the bug versions
+  scenarios/encampment-sketch/  a graveyard among the real nests, and proposed ground around nests
 tools/                       PowerShell helpers (see below)
 TODO.md                      planned work and open design questions, in priority order
 legacy/2023-attempt/         the original 2023 attempt (Factorio 1.1), kept for reference
@@ -90,7 +101,8 @@ Run the scripts from the repo root. If PowerShell refuses to run scripts, prefix
   enables it. Edits in the repo apply the next time Factorio starts.
 - `tools\test.ps1` loads the mod headless in an isolated mods folder (`.dev\mods`, only base,
   this mod and its sketches), runs the gallery scenario, and checks that every enemy type still
-  attacks, leaves a corpse, and was redrawn. Takes a few seconds; exits 0 on pass.
+  attacks, leaves a corpse, and was redrawn, that every worm still fires, and that destroyed
+  nests and worms leave ruins. Takes a few seconds; exits 0 on pass.
 - `tools\screenshot.ps1 [scenario]` opens a scenario with graphics (default `gallery`; also
   `asset-catalog` or `encampment-sketch`), waits for the screenshots it takes, closes the game,
   and copies the images to `.dev\screenshots\<scenario>`. Steam asks you to confirm the custom

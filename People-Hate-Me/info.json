@@ -1,9 +1,9 @@
 {
   "name": "People-Hate-Me",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "title": "People Hate Me",
   "author": "VitalWinter",
   "factorio_version": "2.1",
   "dependencies": ["base >= 2.1.0"],
-  "description": "The natives of Nauvis are no longer bugs. They are people, drawn with the same sprites as you, defending their home from an expanding factory."
+  "description": "The natives of Nauvis are no longer bugs. They are people, drawn with the same sprites as you, living in towns and defending their home from an expanding factory."
 }

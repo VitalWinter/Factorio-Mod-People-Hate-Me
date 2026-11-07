@@ -12,14 +12,21 @@ local function individual_shade(tint)
   return shade
 end
 
+-- A unit's own look, or the look of the gunner who manned a defensive position.
+local function clothing(name)
+  local position = definitions.positions[name]
+  local person = definitions.people[position and position.gunner or name]
+  return person and person.tint
+end
+
 script.on_event(defines.events.on_post_entity_died, function(event)
-  local person = definitions.people[event.prototype.name]
-  if not person or not event.corpses then
+  local tint = clothing(event.prototype.name)
+  if not tint or not event.corpses then
     return
   end
   for _, corpse in pairs(event.corpses) do
     if corpse.valid and corpse.type == "corpse" then
-      corpse.color = individual_shade(person.tint)
+      corpse.color = individual_shade(tint)
     end
   end
-end, {{filter = "type", type = "unit"}})
+end, {{filter = "type", type = "unit"}, {filter = "type", type = "turret"}})

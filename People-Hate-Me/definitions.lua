@@ -30,4 +30,14 @@ definitions.people =
   ["behemoth-spitter"] = {tier = "behemoth", role = "ranged", tint = {0.52, 0.70, 0.12}},
 }
 
+-- Worms are defensive positions (prototypes/positions.lua), each manned by a gunner who looks
+-- like the spitter of the same tier.
+definitions.positions =
+{
+  ["small-worm-turret"]    = {gunner = "small-spitter"},
+  ["medium-worm-turret"]   = {gunner = "medium-spitter"},
+  ["big-worm-turret"]      = {gunner = "big-spitter"},
+  ["behemoth-worm-turret"] = {gunner = "behemoth-spitter"},
+}
+
 return definitions

@@ -1,21 +1,17 @@
--- Candidate replacements for the bug encampments, each beside the bug structure it replaces.
--- Both are outlined with that structure's collision box, so the footprints can be compared.
--- The candidates are kitbashed sprites from this mod's data.lua.
+-- Ideas for settlements that aren't in the mod yet, shown among the mod's real nests: a
+-- graveyard (a kitbashed sprite from this mod's data.lua, outlined with a nest's collision box)
+-- and the ground around nests, as it is now and as proposed.
 -- tools/screenshot.ps1 encampment-sketch runs it and collects the screenshots.
 
 local area = {{-26, -20}, {26, 22}}
-local column_x = {-20, -12, -4, 4, 12, 20}
+local column_x = {-8, 0, 8}
 local done_tick = 200
--- Between the day and night shots of the settlements.
-local lights_on_tick = 128
 
 local screenshots =
 {
   {tick = 120, path = "overview.png", position = {0, 0}, zoom = 0.9, resolution = {1600, 1440}},
-  {tick = 125, path = "settlements.png", position = {0, -12.5}, zoom = 2, resolution = {3008, 832}},
-  {tick = 130, path = "settlements-night.png", position = {0, -12.5}, zoom = 2, resolution = {3008, 832}, daytime = 0.5},
-  {tick = 135, path = "positions.png", position = {0, -0.5}, zoom = 2, resolution = {3008, 640}},
-  {tick = 140, path = "positions-night.png", position = {0, -0.5}, zoom = 2, resolution = {3008, 640}, daytime = 0.5},
+  {tick = 125, path = "settlements.png", position = {0, -12.5}, zoom = 2, resolution = {1664, 832}},
+  {tick = 130, path = "settlements-night.png", position = {0, -12.5}, zoom = 2, resolution = {1664, 832}, daytime = 0.5},
   {tick = 145, path = "ground.png", position = {0, 12.5}, zoom = 2, resolution = {3008, 960}},
 }
 
@@ -33,22 +29,15 @@ local function person(surface, name, position)
   unit.disabled_by_script = true
 end
 
--- A sketch sprite, and its lit windows if it has any. The windows stay hidden until lights_on_tick.
 local function sprite(surface, name, position)
   rendering.draw_sprite{sprite = "phm-sketch-" .. name, surface = surface, target = position, render_layer = "object"}
-  local lit = "phm-sketch-" .. name .. "-lit"
-  if helpers.is_valid_sprite_path(lit) then
-    local windows = storage.windows
-    windows[#windows + 1] = rendering.draw_sprite{sprite = lit, surface = surface, target = position, render_layer = "object", visible = false}
-    windows[#windows + 1] = rendering.draw_light{sprite = lit, surface = surface, target = position, intensity = 0.9, visible = false}
-  end
 end
 
 local function glow(surface, position, scale)
   rendering.draw_light{sprite = "utility/light_medium", surface = surface, target = position, scale = scale or 1, intensity = 0.7, color = {1, 0.85, 0.6}}
 end
 
--- The collision box of the bug structure being replaced, drawn on the ground at x, y.
+-- The collision box of the structure a sketch would stand in for, drawn on the ground at x, y.
 local function outline(surface, structure, x, y)
   local box = prototypes.entity[structure].collision_box
   rendering.draw_rectangle
@@ -63,7 +52,7 @@ local function outline(surface, structure, x, y)
   }
 end
 
-local function now(structure)
+local function nest(structure)
   return function(surface, x, y)
     place(surface, structure, {x, y}, "enemy").disabled_by_script = true
   end
@@ -95,42 +84,10 @@ local function tiles(surface, name, left_top, width, height)
   surface.set_tiles(list)
 end
 
--- Each entry: label, the bug structure whose footprint it must fit, and how to build it.
+-- Each entry: label, the structure whose footprint it fits, and how to build it.
 local settlements =
 {
-  {label = "biter nest (now)", structure = "biter-spawner", build = now("biter-spawner")},
-  {
-    label = "houses",
-    structure = "biter-spawner",
-    build = function(surface, x, y)
-      tiles(surface, "stone-path", {x - 2, y - 2}, 4, 4)
-      sprite(surface, "houses", {x, y})
-      glow(surface, {x - 1.8, y + 1.5}, 0.8)
-      person(surface, "small-biter", {x + 1.5, y + 2.1})
-    end,
-  },
-  {label = "spitter nest (now)", structure = "spitter-spawner", build = now("spitter-spawner")},
-  {
-    label = "flats",
-    structure = "spitter-spawner",
-    build = function(surface, x, y)
-      tiles(surface, "stone-path", {x - 2, y - 2}, 4, 4)
-      sprite(surface, "flats", {x, y})
-      glow(surface, {x + 1.9, y + 1.8}, 0.8)
-      person(surface, "small-spitter", {x - 1.1, y + 2.2})
-    end,
-  },
-  {
-    label = "hall (another nest option)",
-    structure = "biter-spawner",
-    build = function(surface, x, y)
-      tiles(surface, "concrete", {x - 2, y - 2}, 4, 4)
-      sprite(surface, "hall", {x, y})
-      glow(surface, {x - 1.9, y + 1.8}, 0.8)
-      glow(surface, {x + 1.9, y + 1.8}, 0.8)
-      person(surface, "medium-biter", {x + 0.6, y + 2.3})
-    end,
-  },
+  {label = "biter nest", structure = "biter-spawner", build = nest("biter-spawner")},
   {
     label = "graveyard",
     structure = "biter-spawner",
@@ -143,36 +100,7 @@ local settlements =
       person(surface, "medium-spitter", {x + 0.3, y + 1.6})
     end,
   },
-}
-
-local positions =
-{
-  {label = "small worm (now)", structure = "small-worm-turret", build = now("small-worm-turret")},
-  {
-    label = "small: earth-bank pit",
-    structure = "small-worm-turret",
-    build = function(surface, x, y)
-      person(surface, "small-spitter", {x, y})
-      sprite(surface, "position-small", {x, y})
-    end,
-  },
-  {label = "medium worm (now)", structure = "medium-worm-turret", build = now("medium-worm-turret")},
-  {
-    label = "medium: pillbox",
-    structure = "medium-worm-turret",
-    build = function(surface, x, y)
-      sprite(surface, "position-medium", {x, y})
-    end,
-  },
-  {label = "big worm (now)", structure = "big-worm-turret", build = now("big-worm-turret")},
-  {
-    label = "big: bunker, gun on the roof",
-    structure = "big-worm-turret",
-    build = function(surface, x, y)
-      sprite(surface, "position-big", {x, y})
-      person(surface, "big-spitter", {x, y - 0.55})
-    end,
-  },
+  {label = "spitter nest", structure = "spitter-spawner", build = nest("spitter-spawner")},
 }
 
 -- Each entry is {decorative, count, min radius, max radius}, like the spawners' spawn_decoration.
@@ -217,24 +145,18 @@ local function prepare_ground(surface)
   game.map_settings.enemy_expansion.enabled = false
 end
 
-local function build_row(surface, entries, y, label_offset)
-  for column, entry in pairs(entries) do
-    local x = column_x[column]
-    label(surface, entry.label, {x, y - label_offset})
-    outline(surface, entry.structure, x, y)
-    entry.build(surface, x, y)
-  end
-end
-
 local function build_sketch()
-  storage.windows = {}
   local surface = game.surfaces["nauvis"]
   prepare_ground(surface)
   game.forces["enemy"].set_cease_fire("player", true)
   game.forces["player"].set_cease_fire("enemy", true)
 
-  build_row(surface, settlements, -12, 5.6)
-  build_row(surface, positions, 0, 3.8)
+  for column, entry in pairs(settlements) do
+    local x, y = column_x[column], -12
+    label(surface, entry.label, {x, y - 5.6})
+    outline(surface, entry.structure, x, y)
+    entry.build(surface, x, y)
+  end
   for _, patch in pairs(ground) do
     label(surface, patch.label, {patch.x, 5})
     for _, entry in pairs(patch.decoratives) do
@@ -268,11 +190,6 @@ script.on_event(defines.events.on_tick, function(event)
         force_render = true,
         daytime = shot.daytime or 0,
       }
-    end
-  end
-  if event.tick == lights_on_tick then
-    for _, window in pairs(storage.windows) do
-      window.visible = true
     end
   end
   if event.tick == done_tick then

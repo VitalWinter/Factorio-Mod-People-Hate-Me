@@ -1,4 +1,17 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.3.0
+Date: 2026-11-07
+  Features:
+    - Biter nests are two houses with tiled roofs and chimneys, and spitter nests are a block of flats or a hall, on paved lots. People still walk out of them.
+    - Windows and street lamps in the settlements light up at night.
+    - Destroyed settlements leave burnt-out ruins: broken walls, rubble, pieces of fallen roof and a standing chimney on scorched paving.
+    - Worms are defensive positions, each manned by a gunner dressed like the spitter of the same tier: an earth-bank pit (small), a concrete pillbox (medium), a concrete bunker with a gun mount on the roof (big) and a steel-plated bunker (behemoth).
+    - Gunners stand at ease until enemies come near, then raise their guns and turn to fire. The pillbox's gunner fires from its slit.
+    - Destroyed positions leave their wreckage and their dead gunner, in their own shade of clothing colour.
+    - The gallery scenario shows the settlements, positions and ruins, and checks that every position still fires and that destroyed nests and worms leave ruins.
+  Changes:
+    - Nests and worms no longer pulse, screech or roar, and hitting them throws stone chips instead of blood.
+---------------------------------------------------------------------------------------------------
 Version: 0.2.1
 Date: 2026-11-06
   Features:
