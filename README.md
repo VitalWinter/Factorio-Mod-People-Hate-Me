@@ -30,7 +30,7 @@ flesh being thrown when enemies die; the blood stays.
 Design rules so far: body size stays within 20% of the engineer, and tiers are told apart
 mainly by armor and clothing colour.
 
-Still bugs: spawners, worms, and the spitters' acid. See the roadmap below.
+Still bugs: spawners, worms, and the spitters' acid. See [TODO.md](TODO.md).
 
 ## Project layout
 
@@ -47,6 +47,7 @@ People-Hate-Me/              the mod itself (this folder is what Factorio loads)
   scenarios/gallery/         lineup of every enemy type, used for testing
   changelog.txt              shown in-game and on the mod portal
 tools/                       PowerShell helpers (see below)
+TODO.md                      planned work and open design questions, in priority order
 legacy/2023-attempt/         the original 2023 attempt (Factorio 1.1), kept for reference
 ```
 
@@ -87,13 +88,5 @@ If Factorio is installed somewhere else, set `FACTORIO_EXE` to the full path of 
 
 ## Roadmap
 
-1. Done: biters and spitters drawn as people, with human corpses.
-2. Done: red blood and gore, human icons, footsteps and human sounds, individually shaded corpses.
-3. Worms become defensive positions (gun turret graphics).
-4. Spawners become settlements, built from existing structures like the market.
-5. Spitter acid becomes gunfire.
-6. Expansion, attacks and other behaviour framed as a civilization reacting to the factory.
-
-Idea for later: living people can't vary individually because one prototype has one look.
-Hidden look-alike variants of each enemy, swapped in when they spawn, would allow it, at the
-cost of extra entries in kill statistics.
+Planned work and open design questions are tracked in [TODO.md](TODO.md). What's already done
+is in [the changelog](People-Hate-Me/changelog.txt).
