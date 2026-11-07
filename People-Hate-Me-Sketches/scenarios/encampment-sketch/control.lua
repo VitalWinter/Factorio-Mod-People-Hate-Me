@@ -1,22 +1,24 @@
--- A sketch of candidate replacements for the bug encampments, built from real base-game entities
--- and decoratives so they can be judged in-game before any of it becomes prototypes.
+-- Candidate replacements for the bug encampments, each beside the bug structure it replaces.
+-- Both are outlined with that structure's collision box, so the footprints can be compared.
+-- The candidates are kitbashed sprites from this mod's data.lua.
 -- tools/screenshot.ps1 encampment-sketch runs it and collects the screenshots.
 
 local area = {{-26, -20}, {26, 22}}
-local column_x = {-18, -9, 0, 9, 18}
+local column_x = {-20, -12, -4, 4, 12, 20}
 local done_tick = 200
 
 local screenshots =
 {
   {tick = 120, path = "overview.png", position = {0, 0}, zoom = 0.9, resolution = {1600, 1440}},
-  {tick = 125, path = "settlements.png", position = {0, -12.5}, zoom = 2, resolution = {3008, 768}},
-  {tick = 130, path = "settlements-night.png", position = {0, -12.5}, zoom = 2, resolution = {3008, 768}, daytime = 0.5},
-  {tick = 135, path = "positions.png", position = {0, -0.5}, zoom = 2, resolution = {3008, 768}},
-  {tick = 140, path = "ground.png", position = {0, 12.5}, zoom = 2, resolution = {3008, 960}},
+  {tick = 125, path = "settlements.png", position = {0, -12.5}, zoom = 2, resolution = {3008, 832}},
+  {tick = 130, path = "settlements-night.png", position = {0, -12.5}, zoom = 2, resolution = {3008, 832}, daytime = 0.5},
+  {tick = 135, path = "positions.png", position = {0, -0.5}, zoom = 2, resolution = {3008, 640}},
+  {tick = 140, path = "positions-night.png", position = {0, -0.5}, zoom = 2, resolution = {3008, 640}, daytime = 0.5},
+  {tick = 145, path = "ground.png", position = {0, 12.5}, zoom = 2, resolution = {3008, 960}},
 }
 
 local function label(surface, text, position)
-  rendering.draw_text{text = text, surface = surface, target = position, color = {1, 1, 1}, scale = 1.5, alignment = "center"}
+  rendering.draw_text{text = text, surface = surface, target = position, color = {1, 1, 1}, scale = 1.2, alignment = "center"}
 end
 
 local function place(surface, name, position, force)
@@ -29,14 +31,33 @@ local function person(surface, name, position)
   unit.disabled_by_script = true
 end
 
-local function fallen(surface, name, position)
-  place(surface, name, position, "enemy").die()
+local function sprite(surface, name, position)
+  rendering.draw_sprite{sprite = "phm-sketch-" .. name, surface = surface, target = position, render_layer = "object"}
 end
 
-local function hearth(surface, position)
-  local furnace = place(surface, "stone-furnace", position)
-  furnace.insert{name = "coal", count = 50}
-  furnace.insert{name = "iron-ore", count = 50}
+local function glow(surface, position, scale)
+  rendering.draw_light{sprite = "utility/light_medium", surface = surface, target = position, scale = scale or 1, intensity = 0.7, color = {1, 0.85, 0.6}}
+end
+
+-- The collision box of the bug structure being replaced, drawn on the ground at x, y.
+local function outline(surface, structure, x, y)
+  local box = prototypes.entity[structure].collision_box
+  rendering.draw_rectangle
+  {
+    color = {0.4, 0.85, 1, 0.8},
+    width = 2,
+    filled = false,
+    left_top = {x + box.left_top.x, y + box.left_top.y},
+    right_bottom = {x + box.right_bottom.x, y + box.right_bottom.y},
+    surface = surface,
+    draw_on_ground = true,
+  }
+end
+
+local function now(structure)
+  return function(surface, x, y)
+    place(surface, structure, {x, y}, "enemy").disabled_by_script = true
+  end
 end
 
 local function decorate(surface, name, position)
@@ -55,118 +76,87 @@ local function scatter(surface, name, centre, count, min_radius, max_radius)
   end
 end
 
--- Spawners are about 5x5 tiles.
+local function tiles(surface, name, left_top, width, height)
+  local list = {}
+  for dx = 0, width - 1 do
+    for dy = 0, height - 1 do
+      list[#list + 1] = {name = name, position = {math.floor(left_top[1]) + dx, math.floor(left_top[2]) + dy}}
+    end
+  end
+  surface.set_tiles(list)
+end
+
+-- Each entry: label, the bug structure whose footprint it must fit, and how to build it.
 local settlements =
 {
+  {label = "biter nest (now)", structure = "biter-spawner", build = now("biter-spawner")},
   {
-    label = "biter spawner (now)",
+    label = "workshop",
+    structure = "biter-spawner",
     build = function(surface, x, y)
-      place(surface, "biter-spawner", {x, y}, "enemy").disabled_by_script = true
+      sprite(surface, "workshop", {x, y})
+      person(surface, "small-biter", {x + 0.2, y + 1.5})
+    end,
+  },
+  {label = "spitter nest (now)", structure = "spitter-spawner", build = now("spitter-spawner")},
+  {
+    label = "armoury",
+    structure = "spitter-spawner",
+    build = function(surface, x, y)
+      sprite(surface, "armoury", {x, y})
+      glow(surface, {x - 1.9, y + 0.5}, 0.8)
+      person(surface, "small-spitter", {x, y + 1.3})
     end,
   },
   {
-    label = "stone huts",
+    label = "cabins (another nest option)",
+    structure = "biter-spawner",
     build = function(surface, x, y)
-      decorate(surface, "enemy-decal", {x, y})
-      hearth(surface, {x - 1, y - 1})
-      hearth(surface, {x + 1, y + 1})
-      place(surface, "wooden-chest", {x + 1.5, y - 1.5})
-      place(surface, "wooden-chest", {x - 1.5, y + 1.5})
-      scatter(surface, "muddy-stump", {x, y}, 4, 3, 5)
-      person(surface, "small-biter", {x + 2.8, y - 0.5})
-      person(surface, "small-spitter", {x - 2.8, y + 0.2})
+      sprite(surface, "cabins", {x, y})
+      person(surface, "medium-biter", {x - 0.2, y + 0.7})
     end,
   },
   {
-    label = "market village",
+    label = "graveyard",
+    structure = "biter-spawner",
     build = function(surface, x, y)
-      decorate(surface, "enemy-decal", {x, y})
-      place(surface, "market", {x - 0.5, y - 0.5})
-      hearth(surface, {x + 2, y + 2})
-      place(surface, "wooden-chest", {x - 1.5, y + 1.5})
-      place(surface, "wooden-chest", {x - 0.5, y + 1.5})
-      person(surface, "medium-biter", {x + 2.5, y - 1})
-    end,
-  },
-  {
-    label = "walled compound",
-    build = function(surface, x, y)
-      decorate(surface, "enemy-decal", {x, y})
-      for dx = -2, 2 do
-        for dy = -2, 2 do
-          local edge = math.abs(dx) == 2 or math.abs(dy) == 2
-          local gateway = dy == 2 and dx == 0
-          if edge and not gateway then
-            place(surface, "stone-wall", {x + dx + 0.5, y + dy + 0.5})
-          end
-        end
+      for _, row in pairs{-0.6, 0.6} do
+        tiles(surface, "dirt-4", {x - 2, y + row}, 4, 1)
       end
-      hearth(surface, {x, y})
-      place(surface, "wooden-chest", {x + 1.5, y - 0.5})
-      person(surface, "medium-spitter", {x + 0.5, y + 1.6})
-    end,
-  },
-  {
-    label = "ruins",
-    build = function(surface, x, y)
-      place(surface, "medium-scorchmark", {x, y})
-      place(surface, "small-scorchmark", {x - 2, y + 2})
-      place(surface, "stone-furnace-remnants", {x - 1, y - 1})
-      place(surface, "stone-furnace-remnants", {x + 1, y + 1})
-      place(surface, "wooden-chest-remnants", {x + 1.5, y - 1.5})
-      fallen(surface, "small-biter", {x + 2.5, y})
-      fallen(surface, "small-spitter", {x - 2.5, y - 0.5})
+      sprite(surface, "graveyard", {x, y})
+      glow(surface, {x + 1.9, y + 1.4}, 0.8)
+      person(surface, "medium-spitter", {x + 0.3, y + 1.6})
     end,
   },
 }
 
--- Worms are about 2x2 (small) to 3x3 (big and behemoth) tiles.
 local positions =
 {
+  {label = "small worm (now)", structure = "small-worm-turret", build = now("small-worm-turret")},
   {
-    label = "big worm (now)",
+    label = "small position",
+    structure = "small-worm-turret",
     build = function(surface, x, y)
-      place(surface, "big-worm-turret", {x, y}, "enemy").disabled_by_script = true
+      person(surface, "small-spitter", {x, y - 0.1})
+      sprite(surface, "position-small", {x, y})
     end,
   },
+  {label = "medium worm (now)", structure = "medium-worm-turret", build = now("medium-worm-turret")},
   {
-    label = "gun turret",
+    label = "medium position",
+    structure = "medium-worm-turret",
     build = function(surface, x, y)
-      place(surface, "gun-turret", {x, y})
+      person(surface, "medium-spitter", {x - 0.3, y})
+      sprite(surface, "position-medium", {x, y})
     end,
   },
+  {label = "big worm (now)", structure = "big-worm-turret", build = now("big-worm-turret")},
   {
-    label = "rifle pit",
+    label = "big position",
+    structure = "big-worm-turret",
     build = function(surface, x, y)
-      decorate(surface, "dark-mud-decal", {x, y})
-      for dx = -1, 1 do
-        place(surface, "stone-wall", {x + dx + 0.5, y + 1.5})
-      end
-      person(surface, "medium-spitter", {x + 0.5, y + 0.6})
-    end,
-  },
-  {
-    label = "walled gun nest",
-    build = function(surface, x, y)
-      decorate(surface, "dark-mud-decal", {x, y})
-      for dx = -1, 1 do
-        for dy = -1, 1 do
-          if dx ~= 0 or dy ~= 0 then
-            place(surface, "stone-wall", {x + dx + 0.5, y + dy + 0.5})
-          end
-        end
-      end
-      person(surface, "big-spitter", {x + 0.5, y + 0.5})
-    end,
-  },
-  {
-    label = "fallen position",
-    build = function(surface, x, y)
-      place(surface, "small-scorchmark", {x, y + 1})
-      for dx = -1, 1 do
-        place(surface, "wall-remnants", {x + dx + 0.5, y + 1.5})
-      end
-      fallen(surface, "medium-spitter", {x + 0.5, y + 0.3})
+      sprite(surface, "position-big", {x, y})
+      person(surface, "big-spitter", {x, y + 0.1})
     end,
   },
 }
@@ -206,24 +196,18 @@ local function prepare_ground(surface)
     end
   end
   surface.destroy_decoratives{area = area}
-
-  local tiles = {}
-  for x = area[1][1], area[2][1] - 1 do
-    for y = area[1][2], area[2][2] - 1 do
-      tiles[#tiles + 1] = {name = "grass-1", position = {x, y}}
-    end
-  end
-  surface.set_tiles(tiles)
+  tiles(surface, "grass-1", area[1], area[2][1] - area[1][1], area[2][2] - area[1][2])
 
   surface.always_day = true
   game.map_settings.pollution.enabled = false
   game.map_settings.enemy_expansion.enabled = false
 end
 
-local function build_row(surface, entries, y)
+local function build_row(surface, entries, y, label_offset)
   for column, entry in pairs(entries) do
     local x = column_x[column]
-    label(surface, entry.label, {x, y - 4.5})
+    label(surface, entry.label, {x, y - label_offset})
+    outline(surface, entry.structure, x, y)
     entry.build(surface, x, y)
   end
 end
@@ -234,8 +218,8 @@ local function build_sketch()
   game.forces["enemy"].set_cease_fire("player", true)
   game.forces["player"].set_cease_fire("enemy", true)
 
-  build_row(surface, settlements, -12)
-  build_row(surface, positions, 0)
+  build_row(surface, settlements, -12, 5.6)
+  build_row(surface, positions, 0, 3.8)
   for _, patch in pairs(ground) do
     label(surface, patch.label, {patch.x, 5})
     for _, entry in pairs(patch.decoratives) do

@@ -372,7 +372,7 @@ local groups =
     },
   },
   {
-    heading = "Kitbashed from several assets (cropped, scaled, tinted, layered)",
+    heading = "Kitbashed building blocks (full designs are in the encampment sketch)",
     y = 43,
     rows =
     {
@@ -381,19 +381,12 @@ local groups =
         entries =
         {
           {
-            label = "hut: furnace + straw roof",
-            build = function(surface, x, y)
-              sprite(surface, "phm-sketch-hut", {x, y})
-              glow(surface, {x, y + 0.8}, 0.8)
-              person(surface, "small-biter", {x + 2.2, y + 0.8})
-            end,
+            label = "palisade: cut tree trunks",
+            build = function(surface, x, y) sprite(surface, "phm-sketch-palisade", {x, y}) end,
           },
           {
-            label = "hut: older straw",
-            build = function(surface, x, y)
-              sprite(surface, "phm-sketch-hut-old", {x, y})
-              glow(surface, {x, y + 0.8}, 0.8)
-            end,
+            label = "earth bank: desert rocks",
+            build = function(surface, x, y) sprite(surface, "phm-sketch-earth-bank", {x, y}) end,
           },
           {
             label = "campfire: stones, planks, flame",
@@ -402,27 +395,6 @@ local groups =
               glow(surface, {x, y}, 1)
               person(surface, "small-spitter", {x - 1.3, y + 0.3})
               person(surface, "small-biter", {x + 1.3, y - 0.2})
-            end,
-          },
-          {
-            label = "barricade: posts, rubble, crate",
-            build = function(surface, x, y)
-              person(surface, "small-spitter", {x - 0.4, y - 0.9})
-              sprite(surface, "phm-sketch-barricade", {x, y})
-            end,
-          },
-          {
-            label = "palisade: cut tree trunks",
-            build = function(surface, x, y) sprite(surface, "phm-sketch-palisade", {x, y}) end,
-          },
-          {
-            label = "compound",
-            build = function(surface, x, y)
-              sprite(surface, "phm-sketch-compound", {x, y})
-              glow(surface, {x - 1, y + 0.6}, 0.7)
-              glow(surface, {x + 1.1, y + 0.4}, 0.7)
-              glow(surface, {x + 0.1, y + 1}, 1)
-              person(surface, "medium-biter", {x + 1.5, y + 1.2})
             end,
           },
         },

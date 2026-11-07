@@ -33,8 +33,12 @@ Design rules so far:
   clothing colour.
 - Use the base game's own graphics wherever possible.
 - Anything built from them must not look like an existing object. Combine pieces of several
-  assets, or change one enough that it reads as something else. A resize or recolour alone
-  isn't enough: an enlarged stone furnace still looks like a stone furnace.
+  assets, or change one enough that it reads as something else. Resizing is fine, but it
+  can't be what makes the difference: an enlarged stone furnace still looks like a stone
+  furnace.
+- The people's world is as modern as their gear: camouflaged, fortified outposts built from
+  machinery and salvage, not villages of huts.
+- A replacement keeps the footprint (collision box) of the structure it replaces.
 
 Still bugs: spawners, worms, and the spitters' acid. See [TODO.md](TODO.md).
 
@@ -55,7 +59,7 @@ People-Hate-Me/              the mod itself (this folder is what Factorio loads)
 People-Hate-Me-Sketches/     development-only companion mod, never packaged or published
   data.lua                   kitbash experiments: base-game sprites cropped, scaled, tinted, layered
   scenarios/asset-catalog/   every base-game asset that could be repurposed, labelled
-  scenarios/encampment-sketch/  candidate settlements and defensive positions built from real pieces
+  scenarios/encampment-sketch/  kitbashed settlements and defensive positions beside the bug versions
 tools/                       PowerShell helpers (see below)
 TODO.md                      planned work and open design questions, in priority order
 legacy/2023-attempt/         the original 2023 attempt (Factorio 1.1), kept for reference

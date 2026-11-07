@@ -51,26 +51,29 @@ civilization. This file is the working list for getting there.
 
 To see what base-game assets are available for these, run `tools\screenshot.ps1 asset-catalog`
 (everything labelled, plus kitbash examples) and `tools\screenshot.ps1 encampment-sketch`
-(candidate settlements and defensive positions next to the bug versions). Whatever is chosen
-must not look like an existing object (see the design rules in the README), so a market, gun
-turret, wall or furnace used as it is doesn't qualify.
+(candidate settlements and defensive positions next to the bug versions, each outlined with
+the bug structure's collision box). Whatever is chosen follows the design rules in the
+README: modern rather than village-like, built from several assets so it doesn't look like
+an existing object, and within the footprint of what it replaces.
 
 1. **Acid damage type.** Keep acid, so game balance is untouched, or switch to physical once
    it looks like gunfire, which changes how armor and resistances work against it?
-2. **Worms become defensive positions.** The gun turret moves through the same states a worm
-   does (hidden, rising, aiming, firing, lowering), and dead worms could leave gun-turret
-   wreckage. The turret's own graphics and plain stone walls are out under the design rule.
-   Current candidate: a person dug in behind a barricade of cut tree trunks, wall rubble and a
-   broken crate (the asset catalogue's kitbash row). Open questions: how the barricade scales
-   across the four worm sizes, and whether the 20% size rule applies to structures, given
-   that worms vary in size much more than biters.
+2. **Worms become defensive positions.** Each must fit its worm's collision box. Current
+   candidates (encampment sketch): small, a person behind a plate of ship hull under
+   camouflage; medium, the same with an earth bank and an ammunition box; big, a gun turret's
+   mount ringed by log posts, camouflage and an earth bank, with the gunner standing in it.
+   Open questions: worms move through states (hidden, rising, aiming, firing, lowering), so
+   is the gunner drawn into the picture or a separate person; what's left when one is
+   destroyed; and how the behemoth differs from the big one.
 3. **Spawners become settlements.** People walk out of them, and they leave razed remnants
-   with scorch marks when destroyed. The market used as it is is out under the design rule.
-   Current candidate: a palisade of cut tree trunks around straw-roofed stone huts (a stone
-   furnace's body with tree foliage tinted as thatch), a campfire and crates (the asset
-   catalogue's kitbash row). Open questions: whether that look is right, the huts' stone is
-   still too yellow, and how biter settlements differ from spitter ones (for example a
-   workshop and an armoury).
+   with scorch marks when destroyed. Each must fit the nest's 4.4 by 4.4 collision box.
+   Current candidates (encampment sketch): biter nest, a workshop (an assembler's housing with
+   its machinery under camouflage, a radio mast, crates and a salvaged cargo pod); spitter
+   nest, an armoury (an electric furnace's body as a bunker under camouflage, ammunition
+   boxes, earth banks and a lamp); a third option, two small cabins behind a palisade. A
+   graveyard (headstones behind a palisade) could stand near settlements. Open questions:
+   whether these looks are right, how lit and lived-in they should feel, and where
+   graveyards appear.
 4. **Individual looks for living people.** One prototype has one look, so individuality needs
    two or three look-alike variants of each enemy type (different shades, with or without a
    helmet), swapped in at spawn. The cost is extra rows in the kill statistics. Worth it?
