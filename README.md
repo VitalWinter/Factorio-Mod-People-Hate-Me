@@ -46,6 +46,10 @@ People-Hate-Me/              the mod itself (this folder is what Factorio loads)
   locale/en/                 in-game text for the settings
   scenarios/gallery/         lineup of every enemy type, used for testing
   changelog.txt              shown in-game and on the mod portal
+People-Hate-Me-Sketches/     development-only companion mod, never packaged or published
+  data.lua                   kitbash experiments: base-game sprites cropped, scaled, tinted, layered
+  scenarios/asset-catalog/   every base-game asset that could be repurposed, labelled
+  scenarios/encampment-sketch/  candidate settlements and defensive positions built from real pieces
 tools/                       PowerShell helpers (see below)
 TODO.md                      planned work and open design questions, in priority order
 legacy/2023-attempt/         the original 2023 attempt (Factorio 1.1), kept for reference
@@ -73,12 +77,13 @@ Run the scripts from the repo root. If PowerShell refuses to run scripts, prefix
 
 - `tools\link.ps1` links the repo's mod folder into your normal Factorio mods folder and
   enables it. Edits in the repo apply the next time Factorio starts.
-- `tools\test.ps1` loads the mod headless in an isolated mods folder (`.dev\mods`, only base
-  and this mod), runs the gallery scenario, and checks that every enemy type still attacks,
-  leaves a corpse, and was redrawn. Takes a few seconds; exits 0 on pass.
-- `tools\screenshot.ps1` opens the gallery with graphics, waits for the screenshots the
-  scenario takes, closes the game, and copies the images to `.dev\screenshots`. Steam will
-  ask you to confirm the custom launch arguments the first time; click Continue.
+- `tools\test.ps1` loads the mod headless in an isolated mods folder (`.dev\mods`, only base,
+  this mod and its sketches), runs the gallery scenario, and checks that every enemy type still
+  attacks, leaves a corpse, and was redrawn. Takes a few seconds; exits 0 on pass.
+- `tools\screenshot.ps1 [scenario]` opens a scenario with graphics (default `gallery`; also
+  `asset-catalog` or `encampment-sketch`), waits for the screenshots it takes, closes the game,
+  and copies the images to `.dev\screenshots\<scenario>`. Steam asks you to confirm the custom
+  launch arguments each time; click Continue.
 - `tools\package.ps1` builds `dist\People-Hate-Me_<version>.zip` for the mod portal.
 
 The gallery is also playable: in Factorio, open Single player, then Scenarios, then

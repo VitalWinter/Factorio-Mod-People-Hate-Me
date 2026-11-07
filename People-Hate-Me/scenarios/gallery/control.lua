@@ -21,6 +21,7 @@ local rows =
 -- after catches the blood in the air and the aftermath shot catches the blood pools.
 local death_tick = 120
 local check_tick = 600
+local done_tick = 930
 
 local screenshots =
 {
@@ -192,7 +193,7 @@ script.on_event(defines.events.on_tick, function(event)
         position = shot.position,
         zoom = shot.zoom,
         resolution = shot.resolution,
-        path = "people-hate-me/" .. shot.path,
+        path = "people-hate-me/gallery/" .. shot.path,
         hide_health_bars = true,
         force_render = true,
         daytime = 0,
@@ -204,5 +205,8 @@ script.on_event(defines.events.on_tick, function(event)
   end
   if event.tick == check_tick then
     run_checks()
+  end
+  if event.tick == done_tick then
+    helpers.write_file("people-hate-me/gallery/done.txt", "done")
   end
 end)

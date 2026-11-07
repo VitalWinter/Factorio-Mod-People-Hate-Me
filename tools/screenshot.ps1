@@ -1,41 +1,48 @@
-# Opens the gallery scenario with graphics, waits for the screenshots it takes, then closes the game.
-# The images are copied to .dev/screenshots.
-param([int]$TimeoutSeconds = 240)
+# Opens a scenario from one of the repo's mods with graphics, waits for the screenshots it takes,
+# then closes the game. Usage: tools\screenshot.ps1 [scenario], for example "gallery" or "asset-catalog".
+# Each scenario saves its screenshots to script-output/people-hate-me/<scenario>/ and writes done.txt
+# there after the last one. The images are copied to .dev/screenshots/<scenario>.
+param([Parameter(Position = 0)][string]$Scenario = "gallery", [int]$TimeoutSeconds = 240)
 
 . "$PSScriptRoot\common.ps1"
+
+$owner = @($ModName, $SketchModName) |
+  Where-Object { Test-Path (Join-Path $RepoRoot "$_\scenarios\$Scenario\control.lua") } |
+  Select-Object -First 1
+if (-not $owner) {
+  throw "Neither $ModName nor $SketchModName has a scenario called '$Scenario'."
+}
 
 Assert-FactorioNotRunning
 Initialize-DevMods
 $exe = Get-FactorioExe
 
-$names = @("overview.png", "standing.png", "fighting.png", "fallen.png", "aftermath.png")
-$outputDir = Join-Path $UserData "script-output\people-hate-me"
-$destination = Join-Path $DevRoot "screenshots"
+$outputDir = Join-Path $UserData "script-output\people-hate-me\$Scenario"
+$marker = Join-Path $outputDir "done.txt"
+$destination = Join-Path $DevRoot "screenshots\$Scenario"
 New-Item -ItemType Directory -Force -Path $destination | Out-Null
-foreach ($name in $names) {
-  Remove-Item (Join-Path $outputDir $name) -ErrorAction SilentlyContinue
+if (Test-Path $outputDir) {
+  Get-ChildItem $outputDir -File | Remove-Item
 }
 
-$arguments = @("--mod-directory", "`"$DevMods`"", "--load-scenario", "$ModName/gallery", "--disable-audio", "--window-size", "1280x720")
+$arguments = @("--mod-directory", "`"$DevMods`"", "--load-scenario", "$owner/$Scenario", "--disable-audio", "--window-size", "1280x720")
 $launchedAt = Get-Date
 Start-Process -FilePath $exe -ArgumentList $arguments | Out-Null
-Write-Host "Waiting for the gallery screenshots. If Steam asks to confirm the launch arguments, click Continue."
+Write-Host "Waiting for the $Scenario screenshots. If Steam asks to confirm the launch arguments, click Continue."
 
 function Get-ScreenshotSizes {
-  $names | ForEach-Object {
-    $file = Join-Path $outputDir $_
-    if (Test-Path $file) { (Get-Item $file).Length } else { 0 }
-  }
+  Get-ChildItem $outputDir -Filter *.png -ErrorAction SilentlyContinue | ForEach-Object { "$($_.Name)=$($_.Length)" }
 }
 
+# Screenshots are written in the background, so wait for the marker and then for the files to stop growing.
 $deadline = (Get-Date).AddSeconds($TimeoutSeconds)
 $previous = $null
 $done = $false
 while ((Get-Date) -lt $deadline) {
   Start-Sleep -Seconds 2
-  $sizes = Get-ScreenshotSizes
-  $complete = -not ($sizes -contains 0)
-  if ($complete -and $previous -and (($sizes -join ",") -eq ($previous -join ","))) {
+  if (-not (Test-Path $marker)) { continue }
+  $sizes = (Get-ScreenshotSizes) -join ","
+  if ($sizes -and $sizes -eq $previous) {
     $done = $true
     break
   }
@@ -52,7 +59,5 @@ if (-not $done) {
   throw "Timed out waiting for screenshots in $outputDir. Check $UserData\factorio-current.log"
 }
 
-foreach ($name in $names) {
-  Copy-Item (Join-Path $outputDir $name) (Join-Path $destination $name) -Force
-}
+Get-ChildItem $outputDir -Filter *.png | Copy-Item -Destination $destination -Force
 Write-Host "Screenshots saved to $destination"

@@ -3,6 +3,8 @@ $ErrorActionPreference = "Stop"
 $RepoRoot = Split-Path -Parent $PSScriptRoot
 $ModName = "People-Hate-Me"
 $ModSource = Join-Path $RepoRoot $ModName
+# Development-only companion mod: asset catalogue, sketches and kitbash experiments. Never packaged.
+$SketchModName = "People-Hate-Me-Sketches"
 $DevRoot = Join-Path $RepoRoot ".dev"
 $DevMods = Join-Path $DevRoot "mods"
 $UserData = Join-Path $env:APPDATA "Factorio"
@@ -31,17 +33,18 @@ function Assert-FactorioNotRunning {
 }
 
 # Factorio loads a mod from <mods>/<mod name>, so a junction lets it read the repo directly.
-function New-ModLink([string]$ModsDir) {
-  $link = Join-Path $ModsDir $ModName
+function New-ModLink([string]$ModsDir, [string]$Name = $ModName) {
+  $source = Join-Path $RepoRoot $Name
+  $link = Join-Path $ModsDir $Name
   if (Test-Path $link) {
     $item = Get-Item $link -Force
-    if ($item.LinkType -eq "Junction" -and (@($item.Target) -contains $ModSource)) {
+    if ($item.LinkType -eq "Junction" -and (@($item.Target) -contains $source)) {
       return
     }
     throw "$link already exists and is not a link to this repo. Move it out of the mods folder first."
   }
-  New-Item -ItemType Junction -Path $link -Target $ModSource | Out-Null
-  Write-Host "Linked $link -> $ModSource"
+  New-Item -ItemType Junction -Path $link -Target $source | Out-Null
+  Write-Host "Linked $link -> $source"
 }
 
 function Enable-Mod([string]$ModsDir) {
@@ -60,16 +63,18 @@ function Enable-Mod([string]$ModsDir) {
   $list | ConvertTo-Json -Depth 4 | Set-Content -Encoding ascii $listPath
 }
 
-# An isolated mods folder with only base + this mod, so tests aren't affected by other mods.
+# An isolated mods folder with only base, this mod and its sketches, so tests aren't affected by other mods.
 # Saved setting values are removed so every run uses the defaults from settings.lua.
 function Initialize-DevMods {
   New-Item -ItemType Directory -Force -Path $DevMods | Out-Null
   New-ModLink $DevMods
+  New-ModLink $DevMods $SketchModName
   Remove-Item (Join-Path $DevMods "mod-settings.dat") -ErrorAction SilentlyContinue
   $list = [pscustomobject]@{
     mods = @(
       [pscustomobject]@{ name = "base"; enabled = $true },
-      [pscustomobject]@{ name = $ModName; enabled = $true }
+      [pscustomobject]@{ name = $ModName; enabled = $true },
+      [pscustomobject]@{ name = $SketchModName; enabled = $true }
     )
   }
   $list | ConvertTo-Json -Depth 4 | Set-Content -Encoding ascii (Join-Path $DevMods "mod-list.json")

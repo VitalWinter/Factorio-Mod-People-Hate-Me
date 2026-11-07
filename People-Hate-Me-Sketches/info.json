@@ -1,0 +1,9 @@
+{
+  "name": "People-Hate-Me-Sketches",
+  "version": "0.0.1",
+  "title": "People Hate Me: sketches",
+  "author": "VitalWinter",
+  "factorio_version": "2.1",
+  "dependencies": ["base >= 2.1.0", "People-Hate-Me"],
+  "description": "Development only. An asset catalogue, design sketches and kitbash experiments for People Hate Me. Not needed to play."
+}

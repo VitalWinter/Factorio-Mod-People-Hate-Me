@@ -49,6 +49,10 @@ civilization. This file is the working list for getting there.
 
 ## Needs more thought
 
+To see what base-game assets are available for these, run `tools\screenshot.ps1 asset-catalog`
+(everything labelled, plus kitbash examples) and `tools\screenshot.ps1 encampment-sketch`
+(candidate settlements and defensive positions next to the bug versions).
+
 1. **Acid damage type.** Keep acid, so game balance is untouched, or switch to physical once
    it looks like gunfire, which changes how armor and resistances work against it?
 2. **Worms become defensive positions.** The gun turret moves through the same states a worm
