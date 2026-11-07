@@ -1,0 +1,9 @@
+---------------------------------------------------------------------------------------------------
+Version: 0.1.0
+Date: 2026-11-06
+  Features:
+    - Biters and spitters are drawn as people, built from the engineer's own sprites.
+    - Each tier is told apart by body size, clothing colour, and armor (none, heavy, power).
+    - Biters swing a pickaxe when they attack. Spitters aim a gun, and their acid leaves from the gun barrel.
+    - Biter and spitter corpses are fallen people, and their blood is red.
+    - Added a "gallery" scenario that lines up every enemy type next to the engineer.

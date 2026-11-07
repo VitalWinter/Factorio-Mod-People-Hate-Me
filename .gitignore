@@ -1,0 +1,5 @@
+# Local test mods folder (junction + mod-list.json) and collected screenshots
+.dev/
+
+# Packaged release zips
+dist/
