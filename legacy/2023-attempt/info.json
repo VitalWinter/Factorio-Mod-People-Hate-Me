@@ -1,0 +1,9 @@
+{
+    "name": "People-Hate-Me",
+    "version": "0.1.0",
+    "title": "People Hate Me",
+    "author": "VitalWinter",
+    "factorio_version": "1.1",
+    "dependencies": ["base >= 1.1"],
+    "description": ""
+  }
