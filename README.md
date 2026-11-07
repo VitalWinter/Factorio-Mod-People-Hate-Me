@@ -84,6 +84,8 @@ Run the scripts from the repo root. If PowerShell refuses to run scripts, prefix
   `asset-catalog` or `encampment-sketch`), waits for the screenshots it takes, closes the game,
   and copies the images to `.dev\screenshots\<scenario>`. Steam asks you to confirm the custom
   launch arguments each time; click Continue.
+- `tools\view-screenshots.ps1` opens a page in your browser showing every screenshot taken so
+  far, grouped by scenario. Click an image to see it at full size.
 - `tools\package.ps1` builds `dist\People-Hate-Me_<version>.zip` for the mod portal.
 
 The gallery is also playable: in Factorio, open Single player, then Scenarios, then

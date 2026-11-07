@@ -61,3 +61,5 @@ if (-not $done) {
 
 Get-ChildItem $outputDir -Filter *.png | Copy-Item -Destination $destination -Force
 Write-Host "Screenshots saved to $destination"
+& "$PSScriptRoot\view-screenshots.ps1" -NoOpen
+Write-Host "Run tools\view-screenshots.ps1 to browse them."
