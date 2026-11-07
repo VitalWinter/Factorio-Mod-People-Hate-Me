@@ -40,3 +40,44 @@ for name, tint in pairs(gore_tints) do
     tint_pictures(particle.pictures, tint)
   end
 end
+
+-- With the gore setting off, deaths still bleed but no flesh is thrown.
+-- These particles are only created by the enemies' death explosions.
+if settings.startup["people-hate-me-gore"].value then return end
+
+local flesh_particles =
+{
+  ["guts-entrails-particle-small-medium"] = true,
+  ["guts-entrails-particle-big"]          = true,
+  ["guts-entrails-particle-spawner"]      = true,
+}
+
+local function is_flesh(effect)
+  return type(effect) == "table" and effect.type == "create-particle" and flesh_particles[effect.particle_name]
+end
+
+-- Triggers nest items, deliveries and effects, each either a single table or a list of them.
+local function remove_flesh(node)
+  if type(node) ~= "table" then return end
+  if node[1] then
+    for i = #node, 1, -1 do
+      if is_flesh(node[i]) then
+        table.remove(node, i)
+      else
+        remove_flesh(node[i])
+      end
+    end
+  else
+    for key, child in pairs(node) do
+      if is_flesh(child) then
+        node[key] = nil
+      else
+        remove_flesh(child)
+      end
+    end
+  end
+end
+
+for _, explosion in pairs(data.raw.explosion) do
+  remove_flesh(explosion.created_effect)
+end

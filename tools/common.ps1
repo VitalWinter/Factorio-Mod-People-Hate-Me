@@ -61,9 +61,11 @@ function Enable-Mod([string]$ModsDir) {
 }
 
 # An isolated mods folder with only base + this mod, so tests aren't affected by other mods.
+# Saved setting values are removed so every run uses the defaults from settings.lua.
 function Initialize-DevMods {
   New-Item -ItemType Directory -Force -Path $DevMods | Out-Null
   New-ModLink $DevMods
+  Remove-Item (Join-Path $DevMods "mod-settings.dat") -ErrorAction SilentlyContinue
   $list = [pscustomobject]@{
     mods = @(
       [pscustomobject]@{ name = "base"; enabled = $true },

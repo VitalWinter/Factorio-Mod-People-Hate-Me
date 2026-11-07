@@ -11,7 +11,7 @@ pushed out look like us.
 The mod uses only assets that ship with the game. Enemy people are built from the engineer's
 own sprites, varied by size, clothing colour and armor.
 
-## Current state (0.2.0)
+## Current state (0.2.1)
 
 | Enemy | Looks like | Attack |
 | --- | --- | --- |
@@ -24,6 +24,9 @@ engineer with an armor badge for the tier and a gun badge for spitters. The game
 ("Small biter") are kept on purpose: the dehumanizing label next to a human body is part of
 the commentary.
 
+Settings (Settings > Mod settings > Startup): **Gore**, on by default. Turning it off stops
+flesh being thrown when enemies die; the blood stays.
+
 Design rules so far: body size stays within 20% of the engineer, and tiers are told apart
 mainly by armor and clothing colour.
 
@@ -35,10 +38,12 @@ Still bugs: spawners, worms, and the spitters' acid. See the roadmap below.
 People-Hate-Me/              the mod itself (this folder is what Factorio loads)
   info.json                  mod name, version, Factorio version, dependencies
   definitions.lua            size, armor and colour of every enemy type (shared by both stages)
+  settings.lua               mod settings (the gore toggle)
   data.lua                   data stage entry point
   prototypes/people.lua      redraws biters and spitters as people: sprites, icons, sounds
-  prototypes/gore.lua        recolours blood and gore red
+  prototypes/gore.lua        recolours blood and gore red; removes flesh when gore is off
   control.lua                gives every corpse its own shade of clothing colour
+  locale/en/                 in-game text for the settings
   scenarios/gallery/         lineup of every enemy type, used for testing
   changelog.txt              shown in-game and on the mod portal
 tools/                       PowerShell helpers (see below)
@@ -49,7 +54,10 @@ legacy/2023-attempt/         the original 2023 attempt (Factorio 1.1), kept for 
 
 - `info.json` identifies the mod. The folder in the mods directory must be named after
   `name` (or `name_version`).
-- Factorio loads mods in stages. In the **data stage** (`data.lua`, `data-updates.lua`,
+- Factorio loads mods in stages. The **settings stage** (`settings.lua`) comes first and
+  declares mod settings. "Startup" settings can be read in the data stage through
+  `settings.startup`; changing one makes the game restart.
+- In the **data stage** (`data.lua`, `data-updates.lua`,
   `data-final-fixes.lua`) mods edit `data.raw`, the table of every prototype (entity
   definitions, sprites, sounds). All visual changes in this mod happen here.
 - In the **control stage** (`control.lua`) scripts react to events while a game is running.

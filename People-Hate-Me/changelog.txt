@@ -1,4 +1,9 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.2.1
+Date: 2026-11-06
+  Features:
+    - Added a "Gore" startup setting. Turning it off stops flesh being thrown when enemies die; the blood stays.
+---------------------------------------------------------------------------------------------------
 Version: 0.2.0
 Date: 2026-11-06
   Features:
