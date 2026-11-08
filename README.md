@@ -100,8 +100,10 @@ legacy/2023-attempt/         the original 2023 attempt (Factorio 1.1), kept for 
 Run the scripts from the repo root. If PowerShell refuses to run scripts, prefix with
 `powershell -ExecutionPolicy Bypass -File`.
 
-- `tools\link.ps1` links the repo's mod folder into your normal Factorio mods folder and
-  enables it. Edits in the repo apply the next time Factorio starts.
+- `tools\link.ps1` links the repo's mod and its sketches into your normal Factorio mods folder
+  and enables them, so the showroom and every sketch scenario show among the mod scenarios. The
+  sketches only add hidden copies of things, so the game plays the same; turn them off in the
+  mod list to keep them out of a save. Edits in the repo apply the next time Factorio starts.
 - `tools\test.ps1` loads the mod headless in an isolated mods folder (`.dev\mods`, only base,
   this mod and its sketches), runs the gallery scenario, and checks that every enemy type still
   attacks, leaves a corpse, and was redrawn, that every worm still fires, that every spitter's
