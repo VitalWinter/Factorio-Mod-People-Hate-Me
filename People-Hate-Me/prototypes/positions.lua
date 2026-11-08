@@ -7,6 +7,7 @@ local hit_effects = require("__base__.prototypes.entity.hit-effects")
 local definitions = require("definitions")
 local kitbash = require("prototypes.kitbash")
 local person = require("prototypes.person")
+local bottles = require("prototypes.bottles")
 
 local add, building, rect, part, tints = kitbash.add, kitbash.building, kitbash.rect, kitbash.part, kitbash.tints
 
@@ -133,9 +134,10 @@ for name, position in pairs(definitions.positions) do
 
     worm.prepared_alternative_chance = 0
     worm.prepared_alternative_animation = nil
-    for _, sound in pairs{"preparing_sound", "prepared_sound", "prepared_alternative_sound", "starting_attack_sound", "folding_sound", "dying_sound"} do
+    for _, sound in pairs{"preparing_sound", "prepared_sound", "prepared_alternative_sound", "folding_sound", "dying_sound"} do
       worm[sound] = nil
     end
+    worm.starting_attack_sound = bottles.throw_sound
     worm.damaged_trigger_effect = design.hit()
     worm.impact_category = "stone"
     worm.dying_explosion = {{name = position.gunner .. "-die"}, {name = "wall-explosion"}}

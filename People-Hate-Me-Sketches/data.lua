@@ -78,3 +78,26 @@ data:extend
   sprite("earth-bank", kitbash.earth_bank(-1.5, 1.5, 0.2)),
   sprite("campfire", campfire(0, 0)),
 }
+
+-- For the bottle sketch: each goo colour's acid, and a big spitter and a small worm's pit that
+-- throw it, named phm-sketch-<enemy>-<goo>.
+local bottles = require("__People-Hate-Me__.prototypes.bottles")
+
+local function thrower(type, name, goo_name, stream)
+  local copy = table.deepcopy(data.raw[type][name])
+  copy.name = "phm-sketch-" .. name .. "-" .. goo_name
+  copy.localised_name = {"entity-name." .. name}
+  copy.hidden = true
+  copy.autoplace = nil
+  copy.attack_parameters.ammo_type.action.action_delivery.stream = stream .. "-" .. goo_name
+  return copy
+end
+
+for goo_name, goo in pairs(bottles.goos) do
+  bottles.dress(goo, goo_name)
+  data:extend
+  {
+    thrower("unit", "big-spitter", goo_name, "acid-stream-spitter-big"),
+    thrower("turret", "small-worm-turret", goo_name, "acid-stream-worm-small"),
+  }
+end

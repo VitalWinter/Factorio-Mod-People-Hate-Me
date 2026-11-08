@@ -5,6 +5,7 @@ local util = require("util")
 require("sound-util")
 local definitions = require("definitions")
 local person = require("prototypes.person")
+local bottles = require("prototypes.bottles")
 
 local blood_tint = {r = 0.55, g = 0.06, b = 0.05, a = 1}
 
@@ -19,13 +20,6 @@ local pickaxe_hits =
 {
   category = "enemy",
   variations = sound_variations("__core__/sound/axe-mining-stone", 7, 0.5),
-  aggregation = {max_count = 2, remove = true, count_already_playing = true},
-}
-
-local gunshots =
-{
-  category = "enemy",
-  variations = sound_variations("__base__/sound/fight/light-gunshot", 7, 0.3),
   aggregation = {max_count = 2, remove = true, count_already_playing = true},
 }
 
@@ -76,7 +70,7 @@ local function humanize_unit(unit, look)
   if look.role == "ranged" then
     unit.attack_parameters.projectile_creation_parameters = person.muzzle_offsets(s)
     unit.attack_parameters.sound = nil
-    unit.attack_parameters.cyclic_sound = {begin_sound = gunshots}
+    unit.attack_parameters.cyclic_sound = {begin_sound = bottles.throw_sound}
   else
     unit.attack_parameters.sound = pickaxe_hits
   end
