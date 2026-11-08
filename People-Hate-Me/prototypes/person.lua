@@ -81,13 +81,13 @@ end
 -- A throw, cut from the engineer's pickaxe swing ("mining_tool", 26 frames): the arm draws back
 -- slowly (frames 1 to 6) and holds overhead for a moment, comes forward to let go, and
 -- straightens up, leaving out the strike into the ground (frames 19 to 23). Between throws they
--- stay ready, swaying a little.
+-- hold still, ready.
 person.throw =
 {
   wind_up = {1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 10, 13, 17},
   release = {18},
   recover = {24, 25, 26},
-  ready = {1, 2, 3, 2},
+  ready = {1},
 }
 
 -- Joins frame sequences, each repeated as often as it's given.

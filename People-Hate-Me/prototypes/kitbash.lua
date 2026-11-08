@@ -128,9 +128,9 @@ local bank_rocks =
 }
 
 -- One of the desert rocks, tinted as a heap of earth.
-function kitbash.bank_rock(i, x, y, tint)
+function kitbash.bank_rock(i, x, y, tint, scale)
   local rock = bank_rocks[i % #bank_rocks + 1]
-  return part(rock.file, 0, 0, rock.width, rock.height, 0.26, {x, y}, {tint = tint or tints.earth})
+  return part(rock.file, 0, 0, rock.width, rock.height, scale or 0.26, {x, y}, {tint = tint or tints.earth})
 end
 
 -- A low bank of earth: desert rocks overlapping in a row.
@@ -145,11 +145,11 @@ function kitbash.earth_bank(x1, x2, y)
 end
 
 -- A horseshoe of earth bank around the left, front and right, open at the back, drawn back to front.
-function kitbash.earth_ring(rx, ry)
+function kitbash.earth_ring(rx, ry, scale)
   local layers = {}
   for i = 0, 6 do
     local angle = math.rad(190 - 200 * i / 6)
-    layers[#layers + 1] = kitbash.bank_rock(i, rx * math.cos(angle), ry * math.sin(angle))
+    layers[#layers + 1] = kitbash.bank_rock(i, rx * math.cos(angle), ry * math.sin(angle), nil, scale)
   end
   table.sort(layers, function(a, b) return a.shift[2] < b.shift[2] end)
   return layers
