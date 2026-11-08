@@ -10,10 +10,7 @@ civilization. This file is the working list for getting there.
 
 ## Ready to do
 
-1. **Check how corpses disappear.** The bug corpses' decay animation was removed, so bodies,
-   ruins and wrecks may now vanish abruptly when the game cleans them up. If so, add a
-   fade-out.
-2. **Finish the thrown bottles.** Spitters and worms throw bottles of glowing yellow goo
+1. **Finish the thrown bottles.** Spitters and worms throw bottles of glowing yellow goo
    instead of spitting acid (`prototypes/bottles.lua`), with the acid's arc, damage, puddle and
    slowdown unchanged. It stays acid damage, since the goo is a caustic chemical. The throw is
    cut from the engineer's pickaxe swing, so the pickaxe shows in the throwing hand; the base
@@ -21,39 +18,39 @@ civilization. This file is the working list for getting there.
    "Exploding bottles" setting (off by default) makes them burst into a fireball instead. Still
    to do: decide whether the bunkers, which reach 30 to 48 tiles, launch their bottles rather
    than throw them; swap the gun badge on the spitters' icon.
-3. **Icons for nests and worms.** They still have bug icons, which show in Factoriopedia, the
+2. **Icons for nests and worms.** They still have bug icons, which show in Factoriopedia, the
    kill statistics and alerts. Layer item icons (walls, floor tiles, a gun) into a house, a
    block of flats and each position.
-4. **Ground around nests and worms.** They spawn creep decals, mushrooms, lichen and muddy
+3. **Ground around nests and worms.** They spawn creep decals, mushrooms, lichen and muddy
    stumps around them. Swap these for trodden mud, paths and cleared ground (the encampment
    sketch has a first try).
-5. **Remaining bug sounds.** The wet splatter on death (at least a body-fall thud when gore is
+4. **Remaining bug sounds.** The wet splatter on death (at least a body-fall thud when gore is
    off). Nests and worms are silent now; a building could crumble with a
    stone-collapse sound instead of just the debris explosion.
-6. **Test coverage.** Grow the gallery scenario and its automatic checks with each feature as
+5. **Test coverage.** Grow the gallery scenario and its automatic checks with each feature as
    it's built, not at the end.
-7. **Chimney smoke.** The houses and flats have chimneys; a thin trail of smoke from them would
+6. **Chimney smoke.** The houses and flats have chimneys; a thin trail of smoke from them would
    make the settlements feel lived in, alongside the lit windows and street lamps.
-8. **Refugees.** When a settlement is destroyed, its surviving people walk to the nearest other
+7. **Refugees.** When a settlement is destroyed, its surviving people walk to the nearest other
    settlement instead of fighting to the death.
-9. **Factoriopedia.** Every enemy has its own small simulation scene there. Check they look
+8. **Factoriopedia.** Every enemy has its own small simulation scene there. Check they look
    right, especially the nests and worms.
-10. **Main menu and tips.** The main menu's background battles and one tips-and-tricks scene
+9. **Main menu and tips.** The main menu's background battles and one tips-and-tricks scene
     include biters. Check they look right.
-11. **Leftover bug icons.** Corpse and death-effect prototypes still have bug icons, which show
+10. **Leftover bug icons.** Corpse and death-effect prototypes still have bug icons, which show
     up in places like the map editor.
-12. **Achievements.** Keep the names ("Pest control", "It stinks and they don't like it",
+11. **Achievements.** Keep the names ("Pest control", "It stinks and they don't like it",
     "Steamrolled"), consistent with keeping the enemy names. Check whether their icons still
     show bugs.
-13. **Saves and multiplayer.** Test adding the mod to an existing save, removing it again, and
+12. **Saves and multiplayer.** Test adding the mod to an existing save, removing it again, and
     a multiplayer game, before anyone else plays it.
-14. **Compatibility.** Make sure Space Age (including captured spawners) and other enemy mods
+13. **Compatibility.** Make sure Space Age (including captured spawners) and other enemy mods
     (Armoured Biters, Rampant) don't break anything. Later, maybe a generic fallback that
     dresses any unknown enemy as a person of the closest tier.
-15. **Mod portal release.** A 144x144 thumbnail (a crop from a gallery screenshot works), a
+14. **Mod portal release.** A 144x144 thumbnail (a crop from a gallery screenshot works), a
     description that states the intent, screenshots, a license, version 1.0.0, upload. Needs
     the framing question below answered first.
-16. **Translations.** Other languages for the settings text.
+15. **Translations.** Other languages for the settings text.
 
 ## Needs more thought
 

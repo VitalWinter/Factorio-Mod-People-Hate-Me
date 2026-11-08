@@ -11,6 +11,7 @@ local definitions = require("definitions")
 local kitbash = require("prototypes.kitbash")
 local person = require("prototypes.person")
 local bottles = require("prototypes.bottles")
+local corpses = require("prototypes.corpses")
 
 local add, building, rect, part, tints = kitbash.add, kitbash.building, kitbash.rect, kitbash.part, kitbash.tints
 
@@ -125,6 +126,7 @@ local function wreck(corpse, design, look)
   corpse.decay_frame_transition_duration = nil
   corpse.ground_patch = {kitbash.scorch(design.width)}
   corpse.ground_patch_decay = nil
+  corpses.fade(corpse, true)
 end
 
 for name, position in pairs(definitions.positions) do
