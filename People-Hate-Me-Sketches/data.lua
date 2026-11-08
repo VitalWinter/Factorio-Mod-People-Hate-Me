@@ -78,3 +78,26 @@ data:extend
   sprite("earth-bank", kitbash.earth_bank(-1.5, 1.5, 0.2)),
   sprite("campfire", campfire(0, 0)),
 }
+
+-- For the showroom and the bottle sketch: the bottles landing each way in bottles.landings, and
+-- a big spitter and a small worm's pit that throw them, named phm-sketch-<enemy>-<landing>.
+local bottles = require("__People-Hate-Me__.prototypes.bottles")
+
+local function thrower(type, name, landing, stream)
+  local copy = table.deepcopy(data.raw[type][name])
+  copy.name = "phm-sketch-" .. name .. "-" .. landing
+  copy.localised_name = {"entity-name." .. name}
+  copy.hidden = true
+  copy.autoplace = nil
+  copy.attack_parameters.ammo_type.action.action_delivery.stream = stream .. "-" .. landing
+  return copy
+end
+
+for landing in pairs(bottles.landings) do
+  bottles.dress_streams(landing, landing)
+  data:extend
+  {
+    thrower("unit", "big-spitter", landing, "acid-stream-spitter-big"),
+    thrower("turret", "small-worm-turret", landing, "acid-stream-worm-small"),
+  }
+end

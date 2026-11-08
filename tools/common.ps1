@@ -26,6 +26,16 @@ function Get-FactorioExe {
   throw "Could not find factorio.exe. Set the FACTORIO_EXE environment variable to its full path."
 }
 
+function Get-ScenarioOwner([string]$Scenario) {
+  $owner = @($ModName, $SketchModName) |
+    Where-Object { Test-Path (Join-Path $RepoRoot "$_\scenarios\$Scenario\control.lua") } |
+    Select-Object -First 1
+  if (-not $owner) {
+    throw "Neither $ModName nor $SketchModName has a scenario called '$Scenario'."
+  }
+  return $owner
+}
+
 function Assert-FactorioNotRunning {
   if (Get-Process -Name "factorio" -ErrorAction SilentlyContinue) {
     throw "Factorio is already running. Close it first."
@@ -47,18 +57,18 @@ function New-ModLink([string]$ModsDir, [string]$Name = $ModName) {
   Write-Host "Linked $link -> $source"
 }
 
-function Enable-Mod([string]$ModsDir) {
+function Enable-Mod([string]$ModsDir, [string]$Name = $ModName) {
   $listPath = Join-Path $ModsDir "mod-list.json"
   if (Test-Path $listPath) {
     $list = Get-Content $listPath -Raw | ConvertFrom-Json
   } else {
     $list = [pscustomobject]@{ mods = @([pscustomobject]@{ name = "base"; enabled = $true }) }
   }
-  $entry = $list.mods | Where-Object { $_.name -eq $ModName }
+  $entry = $list.mods | Where-Object { $_.name -eq $Name }
   if ($entry) {
     $entry.enabled = $true
   } else {
-    $list.mods = @($list.mods) + [pscustomobject]@{ name = $ModName; enabled = $true }
+    $list.mods = @($list.mods) + [pscustomobject]@{ name = $Name; enabled = $true }
   }
   $list | ConvertTo-Json -Depth 4 | Set-Content -Encoding ascii $listPath
 }

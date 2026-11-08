@@ -45,7 +45,7 @@ end
 -- Builds one pose (e.g. "running") for a person, layered like the engineer:
 -- the body and any armor with their colour masks first, then all of their shadows.
 -- options: keep_runtime_tint; animation_speed; offset, a shift in tiles; facing, a direction
--- 0 to 7 (clockwise from north) to keep only that one.
+-- 0 to 7 (clockwise from north) to keep only that one; frame_sequence, the frames to play.
 function person.pose(look, name, options)
   options = options or {}
   local sets = {{name = "level1"}}
@@ -71,12 +71,46 @@ function person.pose(look, name, options)
     table.insert(layers, shadow)
   end
 
-  if options.animation_speed then
-    for _, layer in pairs(layers) do
-      layer.animation_speed = options.animation_speed
-    end
+  for _, layer in pairs(layers) do
+    layer.animation_speed = options.animation_speed or layer.animation_speed
+    layer.frame_sequence = options.frame_sequence or layer.frame_sequence
   end
   return {layers = layers}
+end
+
+-- A throw, cut from the engineer's pickaxe swing ("mining_tool", 26 frames): the arm draws back
+-- slowly (frames 1 to 6) and holds overhead for a moment, comes forward to let go, and
+-- straightens up, leaving out the strike into the ground (frames 19 to 23). Between throws they
+-- stay ready, swaying a little.
+person.throw =
+{
+  wind_up = {1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 10, 13, 17},
+  release = {18},
+  recover = {24, 25, 26},
+  ready = {1, 2, 3, 2},
+}
+
+-- Joins frame sequences, each repeated as often as it's given.
+function person.frames(...)
+  local sequence = {}
+  for _, part in pairs{...} do
+    for _, frame in pairs(part) do
+      table.insert(sequence, frame)
+    end
+  end
+  return sequence
+end
+
+-- Where a thrown bottle leaves the hand, raised and forward, for each facing direction.
+function person.hand_offsets(scale, offset)
+  offset = offset or {0, 0}
+  local offsets = {}
+  for i = 0, 15 do
+    local orientation = i / 16
+    local angle = orientation * 2 * math.pi
+    offsets[i + 1] = {orientation, {offset[1] + 0.4 * scale * math.sin(angle), offset[2] - scale * (1.5 + 0.3 * math.cos(angle))}}
+  end
+  return offsets
 end
 
 -- The engineer's death sheet holds two different fallen poses side by side.
@@ -92,18 +126,6 @@ function person.fallen(look, offset)
     table.insert(variations, body.layers)
   end
   return variations
-end
-
--- Where gunfire leaves the gun barrel, for each facing direction.
-function person.muzzle_offsets(scale, offset)
-  offset = offset or {0, 0}
-  local offsets = {}
-  for i = 0, 15 do
-    local orientation = i / 16
-    local angle = orientation * 2 * math.pi
-    offsets[i + 1] = {orientation, {offset[1] + 0.8 * scale * math.sin(angle), offset[2] - scale * (1.0 + 0.35 * math.cos(angle))}}
-  end
-  return offsets
 end
 
 return person

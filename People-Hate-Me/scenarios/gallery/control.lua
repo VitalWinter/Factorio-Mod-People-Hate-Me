@@ -193,6 +193,19 @@ local function run_checks()
     end
   end
 
+  -- The goo the spitters' and positions' bottles leave on the ground.
+  local puddles = {}
+  for _, puddle in pairs(surface.find_entities_filtered{area = gallery_area, type = "fire"}) do
+    puddles[puddle.name] = true
+  end
+  for _, tier in pairs(tiers) do
+    for _, thrower in pairs{"spitter", "worm"} do
+      if not puddles["acid-splash-fire-" .. thrower .. "-" .. tier] then
+        table.insert(failures, tier .. " " .. thrower .. "'s bottles left no goo")
+      end
+    end
+  end
+
   for _, spawner in pairs{"biter-spawner", "spitter-spawner"} do
     if not corpses[spawner .. "-corpse"] then
       table.insert(failures, spawner .. " left no ruins")

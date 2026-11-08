@@ -13,21 +13,24 @@ civilization. This file is the working list for getting there.
 1. **Check how corpses disappear.** The bug corpses' decay animation was removed, so bodies,
    ruins and wrecks may now vanish abruptly when the game cleans them up. If so, add a
    fade-out.
-2. **Spitter and worm acid becomes gunfire.** Replace the acid streams with bullet fire, the
-   acid puddles on the ground with small scorch marks or nothing, the slowdown sticker from
-   being hit, and the acid cloud a nest puffs out when its spawn point is blocked. The
-   gunners in the defensive positions fire the same acid streams. Depends on the damage type
-   question below, but the visuals can start without it.
+2. **Finish the thrown bottles.** Spitters and worms throw bottles of glowing yellow goo
+   instead of spitting acid (`prototypes/bottles.lua`), with the acid's arc, damage, puddle and
+   slowdown unchanged. It stays acid damage, since the goo is a caustic chemical. The throw is
+   cut from the engineer's pickaxe swing, so the pickaxe shows in the throwing hand; the base
+   game has no empty-handed throw. The bottles just smash, since the puddle is the danger; the
+   "Exploding bottles" setting (off by default) makes them burst into a fireball instead. Still
+   to do: decide whether the bunkers, which reach 30 to 48 tiles, launch their bottles rather
+   than throw them; swap the gun badge on the spitters' icon.
 3. **Icons for nests and worms.** They still have bug icons, which show in Factoriopedia, the
    kill statistics and alerts. Layer item icons (walls, floor tiles, a gun) into a house, a
    block of flats and each position.
 4. **Ground around nests and worms.** They spawn creep decals, mushrooms, lichen and muddy
    stumps around them. Swap these for trodden mud, paths and cleared ground (the encampment
    sketch has a first try).
-5. **Remaining bug sounds.** Acid impacts, and the wet splatter on death (at least a body-fall
-   thud when gore is off). Nests and worms are silent now; a building could crumble with a
+5. **Remaining bug sounds.** The wet splatter on death (at least a body-fall thud when gore is
+   off). Nests and worms are silent now; a building could crumble with a
    stone-collapse sound instead of just the debris explosion.
-6. **Test coverage.** Grow the gallery scenario and its automatic checks to cover gunfire as
+6. **Test coverage.** Grow the gallery scenario and its automatic checks with each feature as
    it's built, not at the end.
 7. **Chimney smoke.** The houses and flats have chimneys; a thin trail of smoke from them would
    make the settlements feel lived in, alongside the lit windows and street lamps.
@@ -60,18 +63,16 @@ To see what base-game assets are available for these, run `tools\screenshot.ps1 
 town buildings of a civilization (only the worms are military), built from several assets so
 it doesn't look like an existing object, and within the footprint of what it replaces.
 
-1. **Acid damage type.** Keep acid, so game balance is untouched, or switch to physical once
-   it looks like gunfire, which changes how armor and resistances work against it?
-2. **More kinds of building.** Biter nests are always the two houses, and spitter nests are the
+1. **More kinds of building.** Biter nests are always the two houses, and spitter nests are the
    flats or the hall. A mirrored street of houses, a shop or a school would make towns less
    uniform. How much variety is worth it, and should the bugs' variety (biter versus spitter)
    keep mapping to building types?
-3. **Graveyards.** A graveyard (headstones behind a palisade, in the encampment sketch) could
+2. **Graveyards.** A graveyard (headstones behind a palisade, in the encampment sketch) could
    stand near settlements. Does it appear with nests, or where many people have died?
-4. **Individual looks for living people.** One prototype has one look, so individuality needs
+3. **Individual looks for living people.** One prototype has one look, so individuality needs
    two or three look-alike variants of each enemy type (different shades, with or without a
    helmet), swapped in at spawn. The cost is extra rows in the kill statistics. Worth it?
-5. **Does the mod ever say anything outright?** An intro message or tips entry, or let the
+4. **Does the mod ever say anything outright?** An intro message or tips entry, or let the
    visuals carry it alone. Leaning toward visuals only, to match keeping the names.
-6. **Settlement place names on the map.** Naming a place makes it a place, but this pulls
+5. **Settlement place names on the map.** Naming a place makes it a place, but this pulls
    against keeping the dehumanizing labels. Leaning toward leaving it out.
