@@ -5,8 +5,6 @@
 
 require("sound-util")
 local util = require("util")
-local definitions = require("definitions")
-
 local bottles = {}
 
 -- splash   the puddle, which shines in the dark like the acid did
@@ -26,6 +24,11 @@ bottles.landings =
 function bottles.chosen_landing()
   return settings.startup["people-hate-me-exploding-bottles"].value and "fireball" or "smash"
 end
+
+-- A bottle grows with whoever throws it, as the acid did: drawn at the size of its acid, which
+-- its puddle still is (0.5 for a small spitter up to 1.2 for the behemoths), times this, so even
+-- the small ones read in the air.
+local enlarged = 2
 
 local tiers = {"small", "medium", "big", "behemoth"}
 local glass = {0.45, 0.8, 0.5}
@@ -216,13 +219,17 @@ function bottles.dress_goo()
   data.raw["smoke-with-trigger"]["acid-cloud-visual-dummy"].color = goo.fumes
 end
 
+local function acid_size(kind, tier)
+  return data.raw["fire"]["acid-splash-fire-" .. kind .. "-" .. tier].pictures[1].layers[1].scale * 2
+end
+
 -- Turns every spitter's and worm's acid stream into a thrown bottle that lands in one of
 -- bottles.landings. With a suffix, dresses copies named <name>-<suffix> instead and leaves the
 -- originals alone, so the showroom can show the landings side by side.
 function bottles.dress_streams(style, suffix)
   for _, tier in pairs(tiers) do
-    local size = definitions.tiers[tier].scale
     for _, kind in pairs{"spitter", "worm"} do
+      local size = acid_size(kind, tier) * enlarged
       local name = "acid-stream-" .. kind .. "-" .. tier
       local stream = data.raw["stream"][name]
       if suffix then
