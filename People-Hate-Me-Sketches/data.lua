@@ -79,25 +79,25 @@ data:extend
   sprite("campfire", campfire(0, 0)),
 }
 
--- For the bottle sketch: each goo colour's acid, and a big spitter and a small worm's pit that
--- throw it, named phm-sketch-<enemy>-<goo>.
+-- For the showroom and the bottle sketch: the bottles landing each way in bottles.landings, and
+-- a big spitter and a small worm's pit that throw them, named phm-sketch-<enemy>-<landing>.
 local bottles = require("__People-Hate-Me__.prototypes.bottles")
 
-local function thrower(type, name, goo_name, stream)
+local function thrower(type, name, landing, stream)
   local copy = table.deepcopy(data.raw[type][name])
-  copy.name = "phm-sketch-" .. name .. "-" .. goo_name
+  copy.name = "phm-sketch-" .. name .. "-" .. landing
   copy.localised_name = {"entity-name." .. name}
   copy.hidden = true
   copy.autoplace = nil
-  copy.attack_parameters.ammo_type.action.action_delivery.stream = stream .. "-" .. goo_name
+  copy.attack_parameters.ammo_type.action.action_delivery.stream = stream .. "-" .. landing
   return copy
 end
 
-for goo_name, goo in pairs(bottles.goos) do
-  bottles.dress(goo, goo_name)
+for landing in pairs(bottles.landings) do
+  bottles.dress_streams(landing, landing)
   data:extend
   {
-    thrower("unit", "big-spitter", goo_name, "acid-stream-spitter-big"),
-    thrower("turret", "small-worm-turret", goo_name, "acid-stream-worm-small"),
+    thrower("unit", "big-spitter", landing, "acid-stream-spitter-big"),
+    thrower("turret", "small-worm-turret", landing, "acid-stream-worm-small"),
   }
 end

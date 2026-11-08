@@ -17,12 +17,12 @@ pieces of other base-game images: stone wall faces, floor tiles, furnace chimney
 | Enemy | Looks like | Attack |
 | --- | --- | --- |
 | Small / medium / big / behemoth biter | Engineer body at 0.85 / 0.95 / 1.05 / 1.15 size; no armor / heavy armor / power armor / darkened power armor | Pickaxe swing, pickaxe sounds |
-| Small / medium / big / behemoth spitter | Same sizes and armor, different clothing colours | Throws a burning bottle that flares up and leaves a puddle of goo, which hurts and slows like the acid did |
+| Small / medium / big / behemoth spitter | Same sizes and armor, different clothing colours | Winds up and throws a burning bottle of glowing yellow goo, which flares up and leaves a puddle that hurts and slows like the acid did |
 | Biter and spitter corpses | Fallen engineer, two random poses, each with their own shade of clothing colour, red blood pools | |
 | Biter nest | Two houses with tiled roofs and chimneys on a paved lot | People walk out of it |
 | Spitter nest | A two-storey block of flats or a hall with skylights | People walk out of it |
 | Destroyed nest | Burnt-out ruin: broken walls, rubble, fallen roof, a standing chimney, scorched paving | |
-| Small / medium / big / behemoth worm | Earth-bank pit / concrete pillbox / bunker with a gun mount / steel-plated bunker, manned by a gunner dressed like the spitter of that tier | The gunner stands at ease, raises their gun as enemies near, and turns to throw the same bottles as the spitters; the pillbox throws from its slit |
+| Small / medium / big / behemoth worm | Earth-bank pit / concrete pillbox / bunker with a gun mount / steel-plated bunker, manned by a gunner dressed like the spitter of that tier | The gunner stands at ease, readies themselves as enemies near, and turns to throw the same bottles as the spitters; the pillbox throws from its slit |
 | Destroyed worm | Wrecked position with the dead gunner, in their own shade | |
 
 Enemies bleed red, walk with footsteps, and no longer screech or call. Their icons show the
@@ -70,11 +70,11 @@ People-Hate-Me/              the mod itself (this folder is what Factorio loads)
   scenarios/gallery/         lineup of every enemy type and structure, used for testing
   changelog.txt              shown in-game and on the mod portal
 People-Hate-Me-Sketches/     development-only companion mod, never packaged or published
-  data.lua                   kitbash experiments not in the mod yet (graveyard, palisade, campfire), and the goo colours
+  data.lua                   kitbash experiments not in the mod yet (graveyard, palisade, campfire), and the ways a bottle can land
   scenarios/showroom/        the mod in action: stations that keep running, and a panel to jump between them
   scenarios/asset-catalog/   every base-game asset that could be repurposed, labelled
   scenarios/encampment-sketch/  a graveyard among the real nests, and proposed ground around nests
-  scenarios/bottle-sketch/   the goo colours for the thrown bottles, side by side
+  scenarios/bottle-sketch/   the ways a thrown bottle can land, side by side, and the throws filmed frame by frame
 tools/                       PowerShell helpers (see below)
 TODO.md                      planned work and open design questions, in priority order
 legacy/2023-attempt/         the original 2023 attempt (Factorio 1.1), kept for reference
@@ -108,11 +108,11 @@ Run the scripts from the repo root. If PowerShell refuses to run scripts, prefix
   and worm's bottles leave goo, and that destroyed nests and worms leave ruins. Takes a few
   seconds; exits 0 on pass.
 - `tools\play.ps1` opens the showroom with graphics and sound and leaves it open, to watch the
-  mod in action. Its stations keep running: the thrown bottles in each goo colour, every person
-  standing, walking and attacking, the settlements and positions (people come by so the
-  positions wake up and throw), and deaths and ruins replaying every 15 seconds. A panel jumps
-  between stations, slows the game to a half, a quarter or a tenth of normal speed, and switches
-  to night. Steam asks you to confirm the custom launch arguments each time; click Continue.
+  mod in action. Its stations keep running: the thrown bottles landing each way (in flames,
+  without fire, or as a fireball), every person standing, walking and attacking, the
+  settlements and positions (people come by so the positions wake up and throw), and deaths and
+  ruins replaying every 15 seconds. A panel jumps between stations, slows the game to a half, a
+  quarter or a tenth of normal speed, and switches to night. Steam asks you to confirm the custom launch arguments each time; click Continue.
 - `tools\screenshot.ps1 [scenario]` opens a scenario with graphics (default `gallery`; also
   `asset-catalog`, `encampment-sketch` or `bottle-sketch`), waits for the screenshots it takes,
   closes the game, and replaces that scenario's images in `.dev\screenshots\<scenario>`.

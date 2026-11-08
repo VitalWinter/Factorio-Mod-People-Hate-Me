@@ -3,7 +3,8 @@
 -- tools/play.ps1 opens it.
 
 local surface_name = "showroom"
-local goos = {"oil", "sludge", "yellow"}
+-- The ways a bottle can land (bottles.landings in People-Hate-Me/prototypes/bottles.lua).
+local landings = {{name = "flames", label = "flames"}, {name = "smash", label = "no fire"}, {name = "fireball", label = "fireball"}}
 local tiers = {"small", "medium", "big", "behemoth"}
 local worms = {"small-worm-turret", "medium-worm-turret", "big-worm-turret", "behemoth-worm-turret"}
 local column_x = {-8.5, -2.5, 3.5, 9.5}
@@ -49,21 +50,16 @@ local function pace(unit, from, to)
   walk(walker)
 end
 
--- Each goo in a row: a big spitter and a small worm's pit throwing at someone, a puddle on its
--- own, and the fumes a nest puffs out when its door is blocked.
+-- Each way of landing in a row: a big spitter and a small worm's pit throwing at someone.
 local function build_bottles(surface, at)
-  label(surface, "spitter throwing", at(-13.5, -12.5))
-  label(surface, "position throwing", at(3.5, -12.5))
-  label(surface, "puddle", at(13, -12.5))
-  label(surface, "nest fumes", at(20, -12.5))
-  for row, goo in pairs(goos) do
+  label(surface, "spitter throwing", at(-9.5, -12.5))
+  label(surface, "position throwing", at(7.5, -12.5))
+  for row, landing in pairs(landings) do
     local y = (row - 2) * 8
-    label(surface, goo, at(-20.5, y - 0.6), "right")
-    attack(enemy(surface, "phm-sketch-big-spitter-" .. goo, at(-18, y)), target(surface, "character", at(-9, y)))
-    enemy(surface, "phm-sketch-small-worm-turret-" .. goo, at(0, y))
-    target(surface, "character", at(7, y))
-    table.insert(storage.puddles, {name = "acid-splash-fire-spitter-big-" .. goo, position = at(13, y)})
-    table.insert(storage.fumes, {name = "acid-cloud-" .. goo, position = at(20, y)})
+    label(surface, landing.label, at(-16.5, y - 0.6), "right")
+    attack(enemy(surface, "phm-sketch-big-spitter-" .. landing.name, at(-14, y)), target(surface, "character", at(-5, y)))
+    enemy(surface, "phm-sketch-small-worm-turret-" .. landing.name, at(4, y))
+    target(surface, "character", at(11, y))
   end
 end
 
@@ -150,7 +146,7 @@ end
 
 local stations =
 {
-  {caption = "Bottles", origin = {0, 0}, area = {{-28, -14}, {24, 11}}, build = build_bottles},
+  {caption = "Bottles", origin = {0, 0}, area = {{-24, -14}, {15, 11}}, build = build_bottles},
   {caption = "People", origin = {150, 0}, area = {{-26, -13}, {14, 16}}, build = build_people},
   {caption = "Settlements", origin = {300, 0}, area = {{-30, -12}, {8, 17}}, build = build_settlements},
   {caption = "Deaths", origin = {450, 0}, area = {{-26, -6}, {14, 12}}, build = build_deaths},
@@ -178,20 +174,6 @@ end
 
 local function showroom()
   return game.surfaces[surface_name]
-end
-
-local function renew_puddles()
-  for _, puddle in pairs(storage.puddles) do
-    if showroom().count_entities_filtered{name = puddle.name, position = puddle.position, radius = 0.5} == 0 then
-      showroom().create_entity{name = puddle.name, position = puddle.position}
-    end
-  end
-end
-
-local function puff_fumes()
-  for _, fumes in pairs(storage.fumes) do
-    enemy(showroom(), fumes.name, fumes.position)
-  end
 end
 
 local function toggle_passers_by()
@@ -291,8 +273,7 @@ local function build_panel(player)
 end
 
 script.on_init(function()
-  storage.attackers, storage.walkers = {}, {}
-  storage.puddles, storage.fumes, storage.passer_by_spots = {}, {}, {}
+  storage.attackers, storage.walkers, storage.passer_by_spots = {}, {}, {}
   storage.deaths = {spots = {}}
   storage.speed, storage.night = 1, false
 
@@ -307,8 +288,6 @@ script.on_init(function()
     local origin = station.origin
     station.build(surface, function(x, y) return {origin[1] + x, origin[2] + y} end)
   end
-  renew_puddles()
-  puff_fumes()
   toggle_passers_by()
   replay_deaths()
 end)
@@ -357,7 +336,5 @@ script.on_event(defines.events.on_entity_damaged, function(event)
   event.entity.health = event.entity.max_health
 end, {{filter = "name", name = "character"}, {filter = "name", name = "stone-wall"}})
 
-script.on_nth_tick(60, renew_puddles)
-script.on_nth_tick(330, puff_fumes)
 script.on_nth_tick(passer_by_ticks, toggle_passers_by)
 script.on_nth_tick(replay_ticks, replay_deaths)

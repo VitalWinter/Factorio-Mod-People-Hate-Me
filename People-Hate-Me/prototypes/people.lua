@@ -9,11 +9,24 @@ local bottles = require("prototypes.bottles")
 
 local blood_tint = {r = 0.55, g = 0.06, b = 0.05, a = 1}
 
-local attack_poses =
+-- Spitters throw (person.throw). The bottle leaves 30 ticks into the attack, and the release
+-- starts as soon as the wind-up ends, so the wind-up takes 27 ticks to have the arm forward as
+-- the bottle leaves. The first throw after walking winds up with the warmup sequence, later ones
+-- with warmup2. Speeds are the fraction of a sequence played per tick.
+local throw = person.throw
+local throwing =
 {
-  melee  = {name = "mining_tool"},
-  -- The aiming loop has to fit inside the spitters' 100 tick cooldown.
-  ranged = {name = "idle_gun", animation_speed = 0.25},
+  warmup_frame_sequence = throw.wind_up,
+  warmup2_frame_sequence = throw.wind_up,
+  attacking_frame_sequence = person.frames(throw.release, throw.recover),
+  cooldown_frame_sequence = throw.ready,
+  prepared_frame_sequence = throw.ready,
+  back_to_walk_frame_sequence = {1},
+  warmup_animation_speed = 1 / 27,
+  attacking_animation_speed = 1 / 12,
+  cooldown_animation_speed = 1 / 40,
+  prepared_animation_speed = 1 / 40,
+  back_to_walk_animation_speed = 1 / 4,
 }
 
 local pickaxe_hits =
@@ -53,7 +66,6 @@ end
 
 local function humanize_unit(unit, look)
   local s = look.scale
-  local attack = attack_poses[look.role]
 
   unit.icon = nil
   unit.icons = icons(look)
@@ -65,13 +77,14 @@ local function humanize_unit(unit, look)
   unit.working_sound = nil
   unit.dying_sound = nil
 
-  unit.alternative_attacking_frame_sequence = nil
-  unit.attack_parameters.animation = person.pose(look, attack.name, {animation_speed = attack.animation_speed})
+  unit.attack_parameters.animation = person.pose(look, "mining_tool")
   if look.role == "ranged" then
-    unit.attack_parameters.projectile_creation_parameters = person.muzzle_offsets(s)
+    unit.alternative_attacking_frame_sequence = throwing
+    unit.attack_parameters.projectile_creation_parameters = person.hand_offsets(s)
     unit.attack_parameters.sound = nil
     unit.attack_parameters.cyclic_sound = {begin_sound = bottles.throw_sound}
   else
+    unit.alternative_attacking_frame_sequence = nil
     unit.attack_parameters.sound = pickaxe_hits
   end
 

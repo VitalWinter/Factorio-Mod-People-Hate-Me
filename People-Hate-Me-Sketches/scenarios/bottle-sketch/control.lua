@@ -1,31 +1,29 @@
--- The goo colours for the spitters' and worms' thrown bottles, side by side (the data is in
--- People-Hate-Me/prototypes/bottles.lua and this mod's data.lua). Each row is one goo: a big
--- spitter throwing at someone, a small worm's pit firing at someone, a puddle on its own, and the
--- fumes a nest puffs out when its door is blocked.
--- tools/screenshot.ps1 bottle-sketch runs it and collects the screenshots.
+-- The ways a bottle can land (bottles.landings in People-Hate-Me/prototypes/bottles.lua), side by
+-- side. Each row is one way: a big spitter and a small worm's pit throwing at someone.
+-- tools/screenshot.ps1 bottle-sketch runs it and collects the screenshots. It also films a
+-- spitter's and a gunner's throw every other tick into frames/, which aren't collected, for
+-- checking the throw's timing.
 
-local goos = {"oil", "sludge", "yellow"}
+local landings = {"flames", "smash", "fireball"}
 local row_y = {-8, 0, 8}
-local area = {{-28, -14}, {28, 14}}
-local done_tick = 400
+local area = {{-24, -14}, {16, 14}}
+local done_tick = 260
 
-local thrower_x, thrower_target_x = -18, -9
-local pit_x, pit_target_x = 0, 7
-local puddle_x, fumes_x = 13, 20
+local spitter_x, spitter_target_x = -14, -5
+local pit_x, pit_target_x = 4, 11
 
--- The spitters throw at tick 32 and their bottles land at 55; the pits first fire at 217.
-local screenshots =
-{
-  {tick = 44, path = "throwing-1-in-flight.png", position = {-8, 0}, zoom = 2, resolution = {2304, 1344}},
-  {tick = 58, path = "throwing-2-breaking.png", position = {-8, 0}, zoom = 2, resolution = {2304, 1344}},
-  {tick = 70, path = "throwing-3-flare-up.png", position = {-8, 0}, zoom = 2, resolution = {2304, 1344}},
-  {tick = 140, path = "puddles.png", position = {4, 0}, zoom = 2, resolution = {3072, 1344}},
-  {tick = 145, path = "puddles-night.png", position = {4, 0}, zoom = 2, resolution = {3072, 1344}, daytime = 0.5},
-  {tick = 150, path = "close-up-puddle-and-fumes.png", position = {16.5, 0}, zoom = 3, resolution = {1728, 1824}},
-  {tick = 152, path = "close-up-hit.png", position = {-9, 0}, zoom = 3, resolution = {960, 1824}},
-  {tick = 226, path = "positions-1-in-flight.png", position = {-8, 0}, zoom = 2, resolution = {2304, 1344}},
-  {tick = 240, path = "positions-2-breaking.png", position = {-8, 0}, zoom = 2, resolution = {2304, 1344}},
-}
+-- The spitters' bottles leave at about ticks 30 and 130, and the pits' first at about 205.
+local screenshots = {}
+local function film(name, position, first, last)
+  for tick = first, last, 2 do
+    table.insert(screenshots, {tick = tick, path = string.format("frames/%s-%03d.png", name, tick), position = position, zoom = 3, resolution = {320, 320}})
+  end
+end
+film("spitter", {spitter_x + 0.5, row_y[1] - 1}, 0, 180)
+film("gunner", {pit_x + 0.5, row_y[1] - 1}, 170, 240)
+for _, tick in pairs{56, 60, 66, 74, 84, 96, 110, 130} do
+  table.insert(screenshots, {tick = tick, path = string.format("landing-%03d.png", tick), position = {spitter_target_x, 0}, zoom = 2, resolution = {512, 1344}})
+end
 
 local function label(surface, text, position)
   rendering.draw_text{text = text, surface = surface, target = position, color = {1, 1, 1}, scale = 1.5, alignment = "right"}
@@ -64,18 +62,15 @@ local function build_sketch()
   prepare_ground(surface)
   game.create_force("sketch-target")
 
-  for row, goo in pairs(goos) do
+  for row, landing in pairs(landings) do
     local y = row_y[row]
-    label(surface, goo, {thrower_x - 2.5, y - 0.6})
+    label(surface, landing, {spitter_x - 2.5, y - 0.6})
 
-    local spitter = surface.create_entity{name = "phm-sketch-big-spitter-" .. goo, position = {thrower_x, y}, force = "enemy"}
-    spitter.commandable.set_command{type = defines.command.attack, target = target(surface, thrower_target_x, y), distraction = defines.distraction.none}
+    local spitter = surface.create_entity{name = "phm-sketch-big-spitter-" .. landing, position = {spitter_x, y}, force = "enemy"}
+    spitter.commandable.set_command{type = defines.command.attack, target = target(surface, spitter_target_x, y), distraction = defines.distraction.none}
 
-    surface.create_entity{name = "phm-sketch-small-worm-turret-" .. goo, position = {pit_x, y}, force = "enemy"}
+    surface.create_entity{name = "phm-sketch-small-worm-turret-" .. landing, position = {pit_x, y}, force = "enemy"}
     target(surface, pit_target_x, y)
-
-    surface.create_entity{name = "acid-splash-fire-spitter-big-" .. goo, position = {puddle_x, y}}
-    surface.create_entity{name = "acid-cloud-" .. goo, position = {fumes_x, y}, force = "enemy"}
   end
 end
 
@@ -106,7 +101,7 @@ script.on_event(defines.events.on_tick, function(event)
         path = "people-hate-me/bottle-sketch/" .. shot.path,
         hide_health_bars = true,
         force_render = true,
-        daytime = shot.daytime or 0,
+        daytime = 0,
       }
     end
   end

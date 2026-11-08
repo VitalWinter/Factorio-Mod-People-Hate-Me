@@ -1,7 +1,8 @@
 -- Worms become defensive positions, kitbashed from base-game images (prototypes/kitbash.lua)
 -- within each worm's collision box, and manned by a gunner drawn like the people
 -- (prototypes/person.lua). The gunner stands at ease while the worm would be folded underground,
--- and raises their gun to prepare and fire. Destroyed positions leave their dead gunner.
+-- and readies themselves to throw bottles (prototypes/bottles.lua). Destroyed positions leave
+-- their dead gunner.
 
 local hit_effects = require("__base__.prototypes.entity.hit-effects")
 local definitions = require("definitions")
@@ -75,6 +76,7 @@ local design_of =
 -- The engineer's idle loop: 22 frames at 0.15 frames per tick. Turret speeds are the fraction of
 -- the whole animation played each tick.
 local idle_speed = 0.15 / 22
+local ready_speed = 1 / 40
 
 local empty = {filename = "__core__/graphics/empty.png", size = 1}
 
@@ -92,16 +94,26 @@ local function man(worm, design, look)
     return
   end
 
-  worm.folded_animation = person.pose(look, "idle", {offset = offset, facing = 4})
-  local ready = person.pose(look, "idle_gun", {offset = offset})
-  for _, state in pairs{"preparing", "prepared", "starting_attack", "ending_attack", "folding"} do
-    worm[state .. "_animation"] = ready
+  -- The throw (person.throw) keeps the worm's timing. The start of the attack winds up, and the
+  -- bottle leaves as it ends, when the arm comes forward. The end of the attack is long (about a
+  -- second), so the gunner lets go and straightens up in its first few ticks, then sways ready.
+  local function throwing(...)
+    return person.pose(look, "mining_tool", {offset = offset, frame_sequence = person.frames(...)})
   end
+  local throw = person.throw
+  local ready = throw.ready
+  worm.folded_animation = person.pose(look, "idle", {offset = offset, facing = 4})
+  worm.preparing_animation = throwing(ready)
+  worm.prepared_animation = throwing(ready)
+  worm.starting_attack_animation = throwing(throw.wind_up)
+  worm.attacking_animation = throwing(throw.release)
+  worm.ending_attack_animation = throwing(throw.release, throw.recover, ready, ready, ready, ready, ready, ready)
+  worm.folding_animation = throwing({ready[1]})
   worm.folded_speed = idle_speed
   worm.folded_speed_secondary = idle_speed * 0.9
-  worm.prepared_speed = idle_speed
-  worm.prepared_speed_secondary = idle_speed * 0.9
-  worm.attack_parameters.projectile_creation_parameters = person.muzzle_offsets(look.scale, offset)
+  worm.prepared_speed = ready_speed
+  worm.prepared_speed_secondary = ready_speed * 0.9
+  worm.attack_parameters.projectile_creation_parameters = person.hand_offsets(look.scale, offset)
 end
 
 local function wreck(corpse, design, look)

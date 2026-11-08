@@ -15,7 +15,7 @@ definitions.tiers =
   behemoth = {scale = 1.15, armor = "level3addon", armor_icon = "power-armor-mk2", armor_tint = {0.42, 0.42, 0.48}, footstep_volume = {0.45, 0.6}},
 }
 
--- role: "melee" people swing a pickaxe, "ranged" people aim a gun
+-- role: "melee" people swing a pickaxe, "ranged" people throw bottles
 -- tint: clothing colour, applied where the engineer shows the player colour
 definitions.people =
 {

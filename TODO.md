@@ -13,13 +13,14 @@ civilization. This file is the working list for getting there.
 1. **Check how corpses disappear.** The bug corpses' decay animation was removed, so bodies,
    ruins and wrecks may now vanish abruptly when the game cleans them up. If so, add a
    fade-out.
-2. **Finish the thrown bottles.** Spitters and worms throw bottles of burning goo instead of
-   spitting acid (`prototypes/bottles.lua`), with the acid's arc, damage, puddle and slowdown
-   unchanged. It stays acid damage, since the goo is a caustic chemical. Still to do: pick the
-   goo colour (oil, sludge or yellow, side by side in `tools\screenshot.ps1 bottle-sketch`) and
-   drop the other two; decide whether the bunkers, which reach 30 to 48 tiles, launch their
-   bottles rather than throw them; find a throwing pose instead of aiming the gun; swap the
-   gun badge on the spitters' icon.
+2. **Finish the thrown bottles.** Spitters and worms throw bottles of glowing yellow goo
+   instead of spitting acid (`prototypes/bottles.lua`), with the acid's arc, damage, puddle and
+   slowdown unchanged. It stays acid damage, since the goo is a caustic chemical. The throw is
+   cut from the engineer's pickaxe swing, so the pickaxe shows in the throwing hand; the base
+   game has no empty-handed throw. Still to do: choose how the bottles land (in flames, without
+   fire, or as a fireball, side by side at the showroom's bottle station) and set
+   `bottles.default_landing`; decide whether the bunkers, which reach 30 to 48 tiles, launch
+   their bottles rather than throw them; swap the gun badge on the spitters' icon.
 3. **Icons for nests and worms.** They still have bug icons, which show in Factoriopedia, the
    kill statistics and alerts. Layer item icons (walls, floor tiles, a gun) into a house, a
    block of flats and each position.
