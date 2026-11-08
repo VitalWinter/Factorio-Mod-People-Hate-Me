@@ -1,7 +1,7 @@
 -- Worms become defensive positions, kitbashed from base-game images (prototypes/kitbash.lua)
 -- within each worm's collision box, and manned by a gunner drawn like the people
 -- (prototypes/person.lua). Every position is the same mechanical platform with the gunner on it,
--- on ground works that are built up tier by tier: an earth bank, a brick plinth, a concrete
+-- on ground works that are built up tier by tier: on the ground, a brick plinth, a concrete
 -- bunker and a steel-plated one. The gunner stands at ease while the worm would be folded
 -- underground, and readies themselves to throw bottles (prototypes/bottles.lua). Destroyed
 -- positions leave their dead gunner.
@@ -39,16 +39,11 @@ local function scorched_platform(y, scale)
   return platform(y, scale, tints.soot)
 end
 
--- The platform dug in on the ground, in a horseshoe of earth bank open at the back that hides
--- its edges.
+-- The platform on its own, so the mechanical base is what you see.
 function designs.pit()
   local scale, y = 0.3, -0.05
-  local ruin = {scorched_platform(y, scale)}
-  for i, spot in pairs{{-0.6, -0.15}, {-0.25, 0.3}, {0.45, 0.25}, {0.6, -0.2}} do
-    add(ruin, {kitbash.bank_rock(i, spot[1], spot[2], tints.soot, 0.2)})
-  end
-  return {back = {platform(y, scale)}, front = kitbash.earth_ring(0.62, 0.5, 0.2), gunner = on_platform(y, scale), ruin = ruin,
-    fallen = {0.1, -0.05}, width = 2, hit = hit_effects.rock}
+  return {back = {platform(y, scale)}, gunner = on_platform(y, scale), ruin = {scorched_platform(y, scale)},
+    fallen = {0.1, -0.05}, width = 2, hit = hit_effects.entity}
 end
 
 -- The platform on the roof of a block centred at y. slits are {x, width} along the front wall.
