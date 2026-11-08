@@ -26,6 +26,16 @@ function Get-FactorioExe {
   throw "Could not find factorio.exe. Set the FACTORIO_EXE environment variable to its full path."
 }
 
+function Get-ScenarioOwner([string]$Scenario) {
+  $owner = @($ModName, $SketchModName) |
+    Where-Object { Test-Path (Join-Path $RepoRoot "$_\scenarios\$Scenario\control.lua") } |
+    Select-Object -First 1
+  if (-not $owner) {
+    throw "Neither $ModName nor $SketchModName has a scenario called '$Scenario'."
+  }
+  return $owner
+}
+
 function Assert-FactorioNotRunning {
   if (Get-Process -Name "factorio" -ErrorAction SilentlyContinue) {
     throw "Factorio is already running. Close it first."

@@ -71,6 +71,7 @@ People-Hate-Me/              the mod itself (this folder is what Factorio loads)
   changelog.txt              shown in-game and on the mod portal
 People-Hate-Me-Sketches/     development-only companion mod, never packaged or published
   data.lua                   kitbash experiments not in the mod yet (graveyard, palisade, campfire), and the goo colours
+  scenarios/showroom/        the mod in action: stations that keep running, and a panel to jump between them
   scenarios/asset-catalog/   every base-game asset that could be repurposed, labelled
   scenarios/encampment-sketch/  a graveyard among the real nests, and proposed ground around nests
   scenarios/bottle-sketch/   the goo colours for the thrown bottles, side by side
@@ -106,10 +107,15 @@ Run the scripts from the repo root. If PowerShell refuses to run scripts, prefix
   attacks, leaves a corpse, and was redrawn, that every worm still fires, that every spitter's
   and worm's bottles leave goo, and that destroyed nests and worms leave ruins. Takes a few
   seconds; exits 0 on pass.
+- `tools\play.ps1` opens the showroom with graphics and sound and leaves it open, to watch the
+  mod in action. Its stations keep running: the thrown bottles in each goo colour, every person
+  standing, walking and attacking, the settlements and positions (people come by so the
+  positions wake up and throw), and deaths and ruins replaying every 15 seconds. A panel jumps
+  between stations, slows the game to a half, a quarter or a tenth of normal speed, and switches
+  to night. Steam asks you to confirm the custom launch arguments each time; click Continue.
 - `tools\screenshot.ps1 [scenario]` opens a scenario with graphics (default `gallery`; also
-  `asset-catalog`, `encampment-sketch` or `bottle-sketch`), waits for the screenshots it takes, closes the game,
-  and copies the images to `.dev\screenshots\<scenario>`. Steam asks you to confirm the custom
-  launch arguments each time; click Continue.
+  `asset-catalog`, `encampment-sketch` or `bottle-sketch`), waits for the screenshots it takes,
+  closes the game, and replaces that scenario's images in `.dev\screenshots\<scenario>`.
 - `tools\view-screenshots.ps1` opens a page in your browser showing every screenshot taken so
   far, grouped by scenario. Click an image to see it at full size.
 - `tools\package.ps1` builds `dist\People-Hate-Me_<version>.zip` for the mod portal.

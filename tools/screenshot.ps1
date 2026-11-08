@@ -1,18 +1,12 @@
 # Opens a scenario from one of the repo's mods with graphics, waits for the screenshots it takes,
 # then closes the game. Usage: tools\screenshot.ps1 [scenario], for example "gallery" or "asset-catalog".
 # Each scenario saves its screenshots to script-output/people-hate-me/<scenario>/ and writes done.txt
-# there after the last one. The images are copied to .dev/screenshots/<scenario>.
+# there after the last one. The images replace the ones in .dev/screenshots/<scenario>.
 param([Parameter(Position = 0)][string]$Scenario = "gallery", [int]$TimeoutSeconds = 240)
 
 . "$PSScriptRoot\common.ps1"
 
-$owner = @($ModName, $SketchModName) |
-  Where-Object { Test-Path (Join-Path $RepoRoot "$_\scenarios\$Scenario\control.lua") } |
-  Select-Object -First 1
-if (-not $owner) {
-  throw "Neither $ModName nor $SketchModName has a scenario called '$Scenario'."
-}
-
+$owner = Get-ScenarioOwner $Scenario
 Assert-FactorioNotRunning
 Initialize-DevMods
 $exe = Get-FactorioExe
@@ -59,6 +53,8 @@ if (-not $done) {
   throw "Timed out waiting for screenshots in $outputDir. Check $UserData\factorio-current.log"
 }
 
+# Replace the scenario's previous screenshots, so ones it no longer takes don't linger.
+Get-ChildItem $destination -File | Remove-Item
 Get-ChildItem $outputDir -Filter *.png | Copy-Item -Destination $destination -Force
 Write-Host "Screenshots saved to $destination"
 & "$PSScriptRoot\view-screenshots.ps1" -NoOpen
