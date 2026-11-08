@@ -1,8 +1,10 @@
 -- Worms become defensive positions, kitbashed from base-game images (prototypes/kitbash.lua)
 -- within each worm's collision box, and manned by a gunner drawn like the people
--- (prototypes/person.lua). The gunner stands at ease while the worm would be folded underground,
--- and readies themselves to throw bottles (prototypes/bottles.lua). Destroyed positions leave
--- their dead gunner.
+-- (prototypes/person.lua). Every position is the same mechanical platform with the gunner on it,
+-- on ground works that are built up tier by tier: on the ground, a brick plinth, a concrete
+-- bunker and a steel-plated one. The gunner stands at ease while the worm would be folded
+-- underground, and readies themselves to throw bottles (prototypes/bottles.lua). Destroyed
+-- positions leave their dead gunner.
 
 local hit_effects = require("__base__.prototypes.entity.hit-effects")
 local definitions = require("definitions")
@@ -15,60 +17,71 @@ local add, building, rect, part, tints = kitbash.add, kitbash.building, kitbash.
 -- Each design returns:
 --   back    layers drawn behind the gunner
 --   front   layers drawn over the gunner, if any
---   gunner  where the gunner stands, or nil when they're out of sight inside
---   muzzle  where fire leaves the position when the gunner is out of sight
+--   gunner  where the gunner stands
 --   ruin    what's left of the position
 --   fallen  where the dead gunner lies
 --   width   of the burnt ground
 --   hit     the hit effect
 local designs = {}
 
--- A horseshoe pit of earth bank, open at the back.
+-- The platform every gunner stands on: the gun turret's mechanical base, centred at y. The
+-- gunner's feet are a little in front of its centre.
+local function platform(y, scale, tint)
+  return part("entity/gun-turret/gun-turret-base.png", 0, 0, 150, 118, scale, {0, y}, {tint = tint})
+end
+
+local function on_platform(y, scale)
+  return {0, y + 0.25 * scale}
+end
+
+-- A scorched platform among the ruins, under the rubble.
+local function scorched_platform(y, scale)
+  return platform(y, scale, tints.soot)
+end
+
+-- The platform on its own, so the mechanical base is what you see.
 function designs.pit()
-  local back, front = {}, {}
-  for _, rock in pairs(kitbash.earth_ring(0.42, 0.35)) do
-    table.insert(rock.shift[2] < 0 and back or front, rock)
-  end
-  local ruin = {}
-  for i, spot in pairs{{-0.6, -0.15}, {-0.25, 0.3}, {0.45, 0.25}, {0.6, -0.2}} do
-    ruin[i] = kitbash.bank_rock(i, spot[1], spot[2], tints.soot)
-  end
-  return {back = back, front = front, gunner = {0, -0.08}, ruin = ruin, fallen = {0.1, -0.05}, width = 1.8, hit = hit_effects.rock}
+  local scale, y = 0.3, -0.05
+  return {back = {platform(y, scale)}, gunner = on_platform(y, scale), ruin = {scorched_platform(y, scale)},
+    fallen = {0.1, -0.05}, width = 2, hit = hit_effects.entity}
 end
 
--- A concrete pillbox with a firing slit; its gunner is inside.
-function designs.pillbox()
-  local block = {columns = 2, depth = 1.2, floors = 1, k = 0.8, roof = "refined_concrete"}
-  local back = building(0, 0.1, block)
-  add(back, {rect(0, 0.35, 1, 0.1, tints.slit)})
-  return {back = back, muzzle = {0, 0.35}, ruin = kitbash.ruin(0, 0.1, block), fallen = {0.35, 0.6}, width = 2.2, hit = hit_effects.wall}
-end
-
--- A concrete bunker with a gun turret's mount on the roof, where the gunner stands.
-local function bunker(block, slits)
-  local back = building(0, 0.2, block)
+-- The platform on the roof of a block centred at y. slits are {x, width} along the front wall.
+local function raised(y, block, scale, slits, fallen, width)
+  local back = building(0, y, block)
+  local front = y + block.depth / 2
   for _, slit in pairs(slits) do
-    add(back, {rect(slit[1], 0.6, slit[2], 0.1, tints.slit)})
+    add(back, {rect(slit[1], front - 0.5 * block.k, slit[2], 0.1, tints.slit)})
   end
-  add(back, {part("entity/gun-turret/gun-turret-base.png", 0, 0, 150, 118, 0.4, {0, -0.65}, {tint = block.roof_tint})})
-  return {back = back, gunner = {0, -0.55}, ruin = kitbash.ruin(0, 0.2, block), fallen = {0.5, 0.85}, width = 2.8, hit = hit_effects.wall}
+  local roof = front - block.floors * block.k - block.depth / 2
+  add(back, {platform(roof, scale)})
+  local ruin = add({scorched_platform(roof + 0.3, scale * 0.9)}, kitbash.ruin(0, y, block))
+  return {back = back, gunner = on_platform(roof, scale), ruin = ruin, fallen = fallen, width = width, hit = hit_effects.wall}
 end
 
+-- A low brick plinth.
+function designs.plinth()
+  return raised(0.15, {columns = 3, depth = 1.3, floors = 1, k = 0.6, roof = "stone_path", wall_tint = tints.brick}, 0.34, {},
+    {0.35, 0.55}, 2.2)
+end
+
+-- A concrete bunker with a firing slit.
 function designs.bunker()
-  return bunker({columns = 3, depth = 1.6, floors = 1, k = 0.8, roof = "concrete"}, {{-0.3, 1.2}})
+  return raised(0.2, {columns = 3, depth = 1.6, floors = 1, k = 0.8, roof = "concrete"}, 0.4, {{-0.3, 1.2}}, {0.5, 0.85}, 2.8)
 end
 
--- The behemoth's bunker is the same size, but plated in dark steel like the behemoths' armor.
+-- The behemoth's bunker is the same size, but plated in dark steel like the behemoths' armor,
+-- with two slits.
 function designs.heavy_bunker()
   local steel = {0.62, 0.62, 0.68}
-  return bunker({columns = 3, depth = 1.6, floors = 1, k = 0.8, roof = "refined_concrete", roof_tint = steel, wall_tint = steel, seed = 3},
-    {{-0.65, 0.7}, {0.65, 0.7}})
+  return raised(0.2, {columns = 3, depth = 1.6, floors = 1, k = 0.8, roof = "refined_concrete", roof_tint = steel, wall_tint = steel, seed = 3},
+    0.4, {{-0.65, 0.7}, {0.65, 0.7}}, {0.5, 0.85}, 2.8)
 end
 
 local design_of =
 {
   ["small-worm-turret"] = designs.pit,
-  ["medium-worm-turret"] = designs.pillbox,
+  ["medium-worm-turret"] = designs.plinth,
   ["big-worm-turret"] = designs.bunker,
   ["behemoth-worm-turret"] = designs.heavy_bunker,
 }
@@ -76,43 +89,30 @@ local design_of =
 -- The engineer's idle loop: 22 frames at 0.15 frames per tick. Turret speeds are the fraction of
 -- the whole animation played each tick.
 local idle_speed = 0.15 / 22
-local ready_speed = 1 / 40
-
-local empty = {filename = "__core__/graphics/empty.png", size = 1}
 
 local function man(worm, design, look)
   local offset = design.gunner
-  if not offset then
-    for _, state in pairs{"folded", "preparing", "prepared", "starting_attack", "ending_attack", "folding"} do
-      worm[state .. "_animation"] = empty
-    end
-    local muzzle = {}
-    for i = 0, 15 do
-      muzzle[i + 1] = {i / 16, design.muzzle}
-    end
-    worm.attack_parameters.projectile_creation_parameters = muzzle
-    return
-  end
-
   -- The throw (person.throw) keeps the worm's timing. The start of the attack winds up, and the
   -- bottle leaves as it ends, when the arm comes forward. The end of the attack is long (about a
-  -- second), so the gunner lets go and straightens up in its first few ticks, then sways ready.
+  -- second), so the gunner lets go and straightens up over its first third, then holds ready.
   local function throwing(...)
     return person.pose(look, "mining_tool", {offset = offset, frame_sequence = person.frames(...)})
   end
   local throw = person.throw
   local ready = throw.ready
+  local held = {}
+  for i = 1, 8 do
+    held[i] = ready[1]
+  end
   worm.folded_animation = person.pose(look, "idle", {offset = offset, facing = 4})
   worm.preparing_animation = throwing(ready)
   worm.prepared_animation = throwing(ready)
   worm.starting_attack_animation = throwing(throw.wind_up)
   worm.attacking_animation = throwing(throw.release)
-  worm.ending_attack_animation = throwing(throw.release, throw.recover, ready, ready, ready, ready, ready, ready)
-  worm.folding_animation = throwing({ready[1]})
+  worm.ending_attack_animation = throwing(throw.release, throw.recover, held)
+  worm.folding_animation = throwing(ready)
   worm.folded_speed = idle_speed
   worm.folded_speed_secondary = idle_speed * 0.9
-  worm.prepared_speed = ready_speed
-  worm.prepared_speed_secondary = ready_speed * 0.9
   worm.attack_parameters.projectile_creation_parameters = person.hand_offsets(look.scale, offset)
 end
 

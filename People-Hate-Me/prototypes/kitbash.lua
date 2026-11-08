@@ -144,17 +144,6 @@ function kitbash.earth_bank(x1, x2, y)
   return layers
 end
 
--- A horseshoe of earth bank around the left, front and right, open at the back, drawn back to front.
-function kitbash.earth_ring(rx, ry)
-  local layers = {}
-  for i = 0, 6 do
-    local angle = math.rad(190 - 200 * i / 6)
-    layers[#layers + 1] = kitbash.bank_rock(i, rx * math.cos(angle), ry * math.sin(angle))
-  end
-  table.sort(layers, function(a, b) return a.shift[2] < b.shift[2] end)
-  return layers
-end
-
 -- One of the wall's eight heaps of broken stone and rebar.
 function kitbash.rubble(i, x, y, scale)
   scale = scale or 0.45

@@ -7,7 +7,7 @@
 local landings = {"smash", "fireball"}
 local row_y = {-4, 4}
 local area = {{-24, -14}, {16, 14}}
-local done_tick = 260
+local done_tick = 330
 
 local spitter_x, spitter_target_x = -14, -5
 local pit_x, pit_target_x = 4, 11
@@ -20,7 +20,7 @@ local function film(name, position, first, last)
   end
 end
 film("spitter", {spitter_x + 0.5, row_y[1] - 1}, 0, 180)
-film("gunner", {pit_x + 0.5, row_y[1] - 1}, 170, 240)
+film("gunner", {pit_x + 0.5, row_y[1] - 1}, 170, 320)
 for _, tick in pairs{56, 60, 66, 74, 84, 96, 110, 130} do
   table.insert(screenshots, {tick = tick, path = string.format("landing-%03d.png", tick), position = {spitter_target_x, 0}, zoom = 2, resolution = {512, 896}})
 end

@@ -22,7 +22,7 @@ pieces of other base-game images: stone wall faces, floor tiles, furnace chimney
 | Biter nest | Two houses with tiled roofs and chimneys on a paved lot | People walk out of it |
 | Spitter nest | A two-storey block of flats or a hall with skylights | People walk out of it |
 | Destroyed nest | Burnt-out ruin: broken walls, rubble, fallen roof, a standing chimney, scorched paving | |
-| Small / medium / big / behemoth worm | Earth-bank pit / concrete pillbox / bunker with a gun mount / steel-plated bunker, manned by a gunner dressed like the spitter of that tier | The gunner stands at ease, readies themselves as enemies near, and turns to throw the same bottles as the spitters; the pillbox throws from its slit |
+| Small / medium / big / behemoth worm | A gunner dressed like the spitter of that tier, on a mechanical platform (a gun turret's base) that's on the ground / raised on a brick plinth / on a concrete bunker / on a steel-plated bunker | The gunner stands at ease, readies themselves as enemies near, and turns to throw the same bottles as the spitters |
 | Destroyed worm | Wrecked position with the dead gunner, in their own shade | |
 
 Enemies bleed red, walk with footsteps, and no longer screech or call. Their icons show the
