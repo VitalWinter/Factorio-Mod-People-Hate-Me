@@ -1,4 +1,9 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.3.1
+Date: 2026-11-08
+  Changes:
+    - Bodies, ruins and wrecks fade out over about two and a half minutes, the time a bug corpse took to rot, instead of vanishing when the game removes them. Blood pools still fade after about a minute, as the bug blood did.
+---------------------------------------------------------------------------------------------------
 Version: 0.3.0
 Date: 2026-11-07
   Features:

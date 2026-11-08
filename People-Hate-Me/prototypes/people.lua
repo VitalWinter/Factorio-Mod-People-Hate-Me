@@ -6,6 +6,7 @@ require("sound-util")
 local definitions = require("definitions")
 local person = require("prototypes.person")
 local bottles = require("prototypes.bottles")
+local corpses = require("prototypes.corpses")
 
 local blood_tint = {r = 0.55, g = 0.06, b = 0.05, a = 1}
 
@@ -104,6 +105,7 @@ local function humanize_corpse(corpse, look)
   corpse.use_decay_layer = false
   corpse.direction_shuffle = nil
   corpse.shuffle_directions_at_frame = nil
+  corpses.fade(corpse)
   if corpse.ground_patch and corpse.ground_patch.sheet then
     corpse.ground_patch.sheet.tint = blood_tint
   end

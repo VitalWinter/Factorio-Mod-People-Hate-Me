@@ -12,18 +12,18 @@ The mod uses only assets that ship with the game. Enemy people are built from th
 own sprites, varied by size, clothing colour and armor. Their buildings are kitbashed from
 pieces of other base-game images: stone wall faces, floor tiles, furnace chimneys.
 
-## Current state (0.3.0)
+## Current state (0.3.1)
 
 | Enemy | Looks like | Attack |
 | --- | --- | --- |
 | Small / medium / big / behemoth biter | Engineer body at 0.85 / 0.95 / 1.05 / 1.15 size; no armor / heavy armor / power armor / darkened power armor | Pickaxe swing, pickaxe sounds |
 | Small / medium / big / behemoth spitter | Same sizes and armor, different clothing colours | Winds up and throws a bottle of glowing yellow goo, which smashes and leaves a puddle that hurts and slows like the acid did |
-| Biter and spitter corpses | Fallen engineer, two random poses, each with their own shade of clothing colour, red blood pools | |
+| Biter and spitter corpses | Fallen engineer, two random poses, each with their own shade of clothing colour, red blood pools. The blood fades after about a minute; the body fades out over the time a bug corpse used to rot | |
 | Biter nest | Two houses with tiled roofs and chimneys on a paved lot | People walk out of it |
 | Spitter nest | A two-storey block of flats or a hall with skylights | People walk out of it |
-| Destroyed nest | Burnt-out ruin: broken walls, rubble, fallen roof, a standing chimney, scorched paving | |
+| Destroyed nest | Burnt-out ruin: broken walls, rubble, fallen roof, a standing chimney, scorched paving. It fades out with the scorch | |
 | Small / medium / big / behemoth worm | A gunner dressed like the spitter of that tier, on a mechanical platform (a gun turret's base) that's on the ground / raised on a brick plinth / on a concrete bunker / on a steel-plated bunker | The gunner stands at ease, readies themselves as enemies near, and turns to throw the same bottles as the spitters |
-| Destroyed worm | Wrecked position with the dead gunner, in their own shade | |
+| Destroyed worm | Wrecked position with the dead gunner, in their own shade. It fades out with the scorch | |
 
 Enemies bleed red, walk with footsteps, and no longer screech or call. Their icons show the
 engineer with an armor badge for the tier and a gun badge for spitters. Windows and street

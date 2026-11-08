@@ -4,6 +4,7 @@
 
 local hit_effects = require("__base__.prototypes.entity.hit-effects")
 local kitbash = require("prototypes.kitbash")
+local corpses = require("prototypes.corpses")
 
 local add, building, ruin = kitbash.add, kitbash.building, kitbash.ruin
 local window, door, chimney, lamp, pane = kitbash.window, kitbash.door, kitbash.chimney, kitbash.lamp, kitbash.pane
@@ -113,6 +114,7 @@ for name, settlement in pairs(settlements) do
       corpse.decay_frame_transition_duration = nil
       corpse.ground_patch = {{layers = {paving({0.82, 0.8, 0.76}), kitbash.scorch(4.8)}}}
       corpse.ground_patch_decay = nil
+      corpses.fade(corpse, true)
     end
   end
 end
