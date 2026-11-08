@@ -17,7 +17,7 @@ pieces of other base-game images: stone wall faces, floor tiles, furnace chimney
 | Enemy | Looks like | Attack |
 | --- | --- | --- |
 | Small / medium / big / behemoth biter | Engineer body at 0.85 / 0.95 / 1.05 / 1.15 size; no armor / heavy armor / power armor / darkened power armor | Pickaxe swing, pickaxe sounds |
-| Small / medium / big / behemoth spitter | Same sizes and armor, different clothing colours | Winds up and throws a burning bottle of glowing yellow goo, which flares up and leaves a puddle that hurts and slows like the acid did |
+| Small / medium / big / behemoth spitter | Same sizes and armor, different clothing colours | Winds up and throws a bottle of glowing yellow goo, which smashes and leaves a puddle that hurts and slows like the acid did |
 | Biter and spitter corpses | Fallen engineer, two random poses, each with their own shade of clothing colour, red blood pools | |
 | Biter nest | Two houses with tiled roofs and chimneys on a paved lot | People walk out of it |
 | Spitter nest | A two-storey block of flats or a hall with skylights | People walk out of it |
@@ -30,8 +30,12 @@ engineer with an armor badge for the tier and a gun badge for spitters. Windows 
 lamps light up at night. The game's names ("Small biter") are kept on purpose: the
 dehumanizing label next to a human body is part of the commentary.
 
-Settings (Settings > Mod settings > Startup): **Gore**, on by default. Turning it off stops
-flesh being thrown when enemies die; the blood stays.
+Settings (Settings > Mod settings > Startup):
+
+- **Gore**, on by default. Turning it off stops flesh being thrown when enemies die; the blood
+  stays.
+- **Exploding bottles**, off by default. Turning it on makes the thrown bottles burn in the air
+  and burst into a fireball where they land. Only the look changes.
 
 Design rules so far:
 
@@ -56,7 +60,7 @@ Still bugs: the creep and mushrooms around nests, and the nests' and worms' icon
 People-Hate-Me/              the mod itself (this folder is what Factorio loads)
   info.json                  mod name, version, Factorio version, dependencies
   definitions.lua            size, armor and colour of every enemy type, and who mans each worm (shared by both stages)
-  settings.lua               mod settings (the gore toggle)
+  settings.lua               mod settings (gore, exploding bottles)
   data.lua                   data stage entry point
   prototypes/person.lua      draws a person from the engineer's sprites in a look from definitions.lua
   prototypes/people.lua      redraws biters and spitters as people: sprites, icons, sounds
@@ -110,8 +114,8 @@ Run the scripts from the repo root. If PowerShell refuses to run scripts, prefix
   and worm's bottles leave goo, and that destroyed nests and worms leave ruins. Takes a few
   seconds; exits 0 on pass.
 - `tools\play.ps1` opens the showroom with graphics and sound and leaves it open, to watch the
-  mod in action. Its stations keep running: the thrown bottles landing each way (in flames,
-  without fire, or as a fireball), every person standing, walking and attacking, the
+  mod in action. Its stations keep running: the thrown bottles smashing, and bursting as the
+  Exploding bottles setting makes them, every person standing, walking and attacking, the
   settlements and positions (people come by so the positions wake up and throw), and deaths and
   ruins replaying every 15 seconds. A panel jumps between stations, slows the game to a half, a
   quarter or a tenth of normal speed, and switches to night. Steam asks you to confirm the custom launch arguments each time; click Continue.

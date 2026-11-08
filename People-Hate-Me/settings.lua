@@ -7,4 +7,11 @@ data:extend
     default_value = true,
     order = "a",
   },
+  {
+    type = "bool-setting",
+    name = "people-hate-me-exploding-bottles",
+    setting_type = "startup",
+    default_value = false,
+    order = "b",
+  },
 }

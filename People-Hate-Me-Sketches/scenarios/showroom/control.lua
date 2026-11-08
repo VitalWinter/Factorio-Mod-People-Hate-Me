@@ -4,7 +4,7 @@
 
 local surface_name = "showroom"
 -- The ways a bottle can land (bottles.landings in People-Hate-Me/prototypes/bottles.lua).
-local landings = {{name = "flames", label = "flames"}, {name = "smash", label = "no fire"}, {name = "fireball", label = "fireball"}}
+local landings = {{name = "smash", label = "smashing"}, {name = "fireball", label = "Exploding bottles setting"}}
 local tiers = {"small", "medium", "big", "behemoth"}
 local worms = {"small-worm-turret", "medium-worm-turret", "big-worm-turret", "behemoth-worm-turret"}
 local column_x = {-8.5, -2.5, 3.5, 9.5}
@@ -55,7 +55,7 @@ local function build_bottles(surface, at)
   label(surface, "spitter throwing", at(-9.5, -12.5))
   label(surface, "position throwing", at(7.5, -12.5))
   for row, landing in pairs(landings) do
-    local y = (row - 2) * 8
+    local y = (row - 1.5) * 8
     label(surface, landing.label, at(-16.5, y - 0.6), "right")
     attack(enemy(surface, "phm-sketch-big-spitter-" .. landing.name, at(-14, y)), target(surface, "character", at(-5, y)))
     enemy(surface, "phm-sketch-small-worm-turret-" .. landing.name, at(4, y))

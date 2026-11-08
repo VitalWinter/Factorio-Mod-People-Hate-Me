@@ -14,17 +14,18 @@ local bottles = {}
 -- fumes    the cloud a nest puffs out when its door is blocked, premultiplied
 local goo = {splash = {1, 0.82, 0.12}, sticker = {0.85, 0.7, 0.1, 0.8}, fumes = {0.55, 0.48, 0.12, 0.55}}
 
--- How a bottle lands, being compared side by side in the showroom:
---   flames    a burning bottle that flares up in flames
---   smash     a plain bottle of goo that just smashes
+-- How a bottle lands. The goo's danger is the puddle it leaves, so by default the bottle just
+-- smashes; the "Exploding bottles" setting picks the fireball instead.
+--   smash     a bottle of goo that smashes
 --   fireball  a burning bottle that bursts into a fireball
 bottles.landings =
 {
-  flames = {burning = true},
   smash = {burning = false},
   fireball = {burning = true},
 }
-bottles.default_landing = "flames"
+function bottles.chosen_landing()
+  return settings.startup["people-hate-me-exploding-bottles"].value and "fireball" or "smash"
+end
 
 local tiers = {"small", "medium", "big", "behemoth"}
 local glass = {0.45, 0.8, 0.5}
@@ -42,7 +43,6 @@ end
 
 bottles.throw_sound = sound("__base__/sound/fight/throw-projectile", 6, 0.5)
 local breaking_glass = sound("__base__/sound/car-glass-impact", 5, 0.45)
-local whoosh = sound("__base__/sound/fight/fire-impact", 5, 0.4)
 
 -- A bottle tumbling end over end: one of the artillery's spent shell casings, tinted as green
 -- glass. A burning one has a rag in its neck, the start of a ground fire's flicker.
@@ -83,73 +83,19 @@ local function bottle(size, burning, as_shadow)
   return {layers = {casing, rag}}
 end
 
--- The ground fire's flames; base is how far up its frame the flame starts.
-local flames =
-{
-  {file = "fire-flame-01.png", width = 84, height = 130, base = 0.19},
-  {file = "fire-flame-02.png", width = 82, height = 106, base = 0.12},
-  {file = "fire-flame-03.png", width = 84, height = 124, base = 0.17},
-}
-
--- One flame of the flare-up when a burning bottle breaks: it catches small, grows, burns for
--- over a second, then dies down into smoke.
-local function flare_up(name, radius)
-  local scale = 0.1 + 0.2 * radius
-  local animations = {}
-  for i, flame in pairs(flames) do
-    animations[i] =
-    {
-      filename = "__base__/graphics/entity/fire-flame/" .. flame.file,
-      line_length = 10,
-      width = flame.width,
-      height = flame.height,
-      frame_count = 60,
-      animation_speed = 0.75,
-      scale = scale,
-      shift = {0, -(0.5 - flame.base) * flame.height * scale / 32},
-      draw_as_glow = true,
-    }
-  end
-  return
-  {
-    type = "explosion",
-    name = name,
-    flags = {"not-on-map"},
-    hidden = true,
-    animations = animations,
-    height = 0,
-    scale_initial = 0.25,
-    scale_initial_deviation = 0.1,
-    scale_in_duration = 16,
-    scale_out_duration = 40,
-    scale_end = 0.3,
-    scale_deviation = 0.15,
-    fade_in_duration = 8,
-    fade_out_duration = 36,
-    smoke = "soft-fire-smoke",
-    smoke_count = 1,
-    smoke_slow_down_factor = 1,
-    light = {intensity = 0.4, size = 2 + 2 * radius, color = flame_light},
-  }
-end
-
--- A grenade's fireball, sized to the splash.
+-- A grenade's fireball, sized to the splash, made once per original stream.
 local function fireball(name, radius)
-  local explosion = table.deepcopy(data.raw["explosion"]["grenade-explosion"])
-  explosion.name = name
-  explosion.scale = 0.45 + 0.25 * radius
-  return explosion
-end
-
-local function explosion(name, make, radius)
   if not data.raw["explosion"][name] then
-    data:extend{make(name, radius)}
+    local explosion = table.deepcopy(data.raw["explosion"]["grenade-explosion"])
+    explosion.name = name
+    explosion.scale = 0.45 + 0.25 * radius
+    data:extend{explosion}
   end
   return name
 end
 
--- What happens where a bottle lands, besides the goo: it smashes, and a burning one goes up.
--- name is the original stream's, so copies of a stream share its explosions.
+-- What happens where a bottle lands, besides the goo: it smashes, and a burning one bursts.
+-- name is the original stream's, so copies of a stream share its fireball.
 local function landing(style, name, radius)
   local effects =
   {
@@ -167,21 +113,11 @@ local function landing(style, name, radius)
       speed_from_center_deviation = 0.03,
     },
   }
-  if style == "flames" then
-    table.insert(effects, {type = "play-sound", sound = whoosh})
+  if style == "fireball" then
     table.insert(effects,
     {
       type = "create-explosion",
-      entity_name = explosion(name .. "-flare-up", flare_up, radius),
-      repeat_count = 3,
-      offset_deviation = {{-0.4 * radius, -0.25 * radius}, {0.4 * radius, 0.25 * radius}},
-      tile_collision_mask = on_land,
-    })
-  elseif style == "fireball" then
-    table.insert(effects,
-    {
-      type = "create-explosion",
-      entity_name = explosion(name .. "-fireball-burst", fireball, radius),
+      entity_name = fireball(name .. "-fireball-burst", radius),
       tile_collision_mask = on_land,
     })
   end

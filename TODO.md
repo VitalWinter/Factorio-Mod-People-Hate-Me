@@ -17,10 +17,10 @@ civilization. This file is the working list for getting there.
    instead of spitting acid (`prototypes/bottles.lua`), with the acid's arc, damage, puddle and
    slowdown unchanged. It stays acid damage, since the goo is a caustic chemical. The throw is
    cut from the engineer's pickaxe swing, so the pickaxe shows in the throwing hand; the base
-   game has no empty-handed throw. Still to do: choose how the bottles land (in flames, without
-   fire, or as a fireball, side by side at the showroom's bottle station) and set
-   `bottles.default_landing`; decide whether the bunkers, which reach 30 to 48 tiles, launch
-   their bottles rather than throw them; swap the gun badge on the spitters' icon.
+   game has no empty-handed throw. The bottles just smash, since the puddle is the danger; the
+   "Exploding bottles" setting (off by default) makes them burst into a fireball instead. Still
+   to do: decide whether the bunkers, which reach 30 to 48 tiles, launch their bottles rather
+   than throw them; swap the gun badge on the spitters' icon.
 3. **Icons for nests and worms.** They still have bug icons, which show in Factoriopedia, the
    kill statistics and alerts. Layer item icons (walls, floor tiles, a gun) into a house, a
    block of flats and each position.

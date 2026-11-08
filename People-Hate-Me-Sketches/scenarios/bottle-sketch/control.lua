@@ -4,8 +4,8 @@
 -- spitter's and a gunner's throw every other tick into frames/, which aren't collected, for
 -- checking the throw's timing.
 
-local landings = {"flames", "smash", "fireball"}
-local row_y = {-8, 0, 8}
+local landings = {"smash", "fireball"}
+local row_y = {-4, 4}
 local area = {{-24, -14}, {16, 14}}
 local done_tick = 260
 
@@ -22,7 +22,7 @@ end
 film("spitter", {spitter_x + 0.5, row_y[1] - 1}, 0, 180)
 film("gunner", {pit_x + 0.5, row_y[1] - 1}, 170, 240)
 for _, tick in pairs{56, 60, 66, 74, 84, 96, 110, 130} do
-  table.insert(screenshots, {tick = tick, path = string.format("landing-%03d.png", tick), position = {spitter_target_x, 0}, zoom = 2, resolution = {512, 1344}})
+  table.insert(screenshots, {tick = tick, path = string.format("landing-%03d.png", tick), position = {spitter_target_x, 0}, zoom = 2, resolution = {512, 896}})
 end
 
 local function label(surface, text, position)
