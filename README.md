@@ -12,12 +12,12 @@ The mod uses only assets that ship with the game. Enemy people are built from th
 own sprites, varied by size, clothing colour and armor. Their buildings are kitbashed from
 pieces of other base-game images: stone wall faces, floor tiles, furnace chimneys.
 
-## Current state (0.3.1)
+## Current state (0.3.2)
 
 | Enemy | Looks like | Attack |
 | --- | --- | --- |
 | Small / medium / big / behemoth biter | Engineer body at 0.85 / 0.95 / 1.05 / 1.15 size; no armor / heavy armor / power armor / darkened power armor | Pickaxe swing, pickaxe sounds |
-| Small / medium / big / behemoth spitter | Same sizes and armor, different clothing colours | Winds up and throws a bottle of glowing yellow goo, which smashes and leaves a puddle that hurts and slows like the acid did |
+| Small / medium / big / behemoth spitter | Same sizes and armor, different clothing colours | Winds up and throws a bottle of glowing yellow goo. The bottle glows and casts a shadow under its arc, then smashes and leaves a puddle that hurts and slows like the acid did |
 | Biter and spitter corpses | Fallen engineer, two random poses, each with their own shade of clothing colour, red blood pools. The blood fades after about a minute; the body fades out over the time a bug corpse used to rot | |
 | Biter nest | Two houses with tiled roofs and chimneys on a paved lot | People walk out of it |
 | Spitter nest | A two-storey block of flats or a hall with skylights | People walk out of it |
@@ -67,7 +67,7 @@ People-Hate-Me/              the mod itself (this folder is what Factorio loads)
   prototypes/kitbash.lua     builds pictures from cropped, scaled, tinted pieces of base-game images
   prototypes/settlements.lua redraws spawners as town buildings, and their corpses as ruins
   prototypes/positions.lua   redraws worms as manned defensive positions, and their corpses as wrecks
-  prototypes/bottles.lua     turns the spitters' and worms' acid into thrown bottles of burning goo
+  prototypes/bottles.lua     turns the spitters' and worms' acid into thrown bottles of goo
   prototypes/gore.lua        recolours blood and gore red; removes flesh when gore is off
   control.lua                gives every fallen person their own shade of clothing colour
   locale/en/                 in-game text for the settings
@@ -114,10 +114,10 @@ Run the scripts from the repo root. If PowerShell refuses to run scripts, prefix
   and worm's bottles leave goo, and that destroyed nests and worms leave ruins. Takes a few
   seconds; exits 0 on pass.
 - `tools\play.ps1` opens the showroom with graphics and sound and leaves it open, to watch the
-  mod in action. Its stations keep running: the thrown bottles smashing, and bursting as the
-  Exploding bottles setting makes them, every person standing, walking and attacking, the
-  settlements and positions (people come by so the positions wake up and throw), and deaths and
-  ruins replaying every 15 seconds. A panel jumps between stations, slows the game to a half, a
+  mod in action. Its stations keep running: the thrown bottles smashing, the steel-plated
+  bunker's long shot, and bottles bursting as the Exploding bottles setting makes them, every
+  person standing, walking and attacking, the settlements and positions (people come by so the
+  positions wake up and throw), and deaths and ruins replaying every 15 seconds. A panel jumps between stations, slows the game to a half, a
   quarter or a tenth of normal speed, and switches to night. Steam asks you to confirm the custom launch arguments each time; click Continue.
 - `tools\screenshot.ps1 [scenario]` opens a scenario with graphics (default `gallery`; also
   `asset-catalog`, `encampment-sketch` or `bottle-sketch`), waits for the screenshots it takes,
