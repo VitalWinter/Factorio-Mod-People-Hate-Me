@@ -10,47 +10,39 @@ civilization. This file is the working list for getting there.
 
 ## Ready to do
 
-1. **Finish the thrown bottles.** Spitters and worms throw bottles of glowing yellow goo
-   instead of spitting acid (`prototypes/bottles.lua`), with the acid's arc, damage, puddle and
-   slowdown unchanged. It stays acid damage, since the goo is a caustic chemical. The throw is
-   cut from the engineer's pickaxe swing, so the pickaxe shows in the throwing hand; the base
-   game has no empty-handed throw. The bottles just smash, since the puddle is the danger; the
-   "Exploding bottles" setting (off by default) makes them burst into a fireball instead. Still
-   to do: decide whether the bunkers, which reach 30 to 48 tiles, launch their bottles rather
-   than throw them; swap the gun badge on the spitters' icon.
-2. **Icons for nests and worms.** They still have bug icons, which show in Factoriopedia, the
+1. **Icons for nests and worms.** They still have bug icons, which show in Factoriopedia, the
    kill statistics and alerts. Layer item icons (walls, floor tiles, a gun) into a house, a
    block of flats and each position.
-3. **Ground around nests and worms.** They spawn creep decals, mushrooms, lichen and muddy
+2. **Ground around nests and worms.** They spawn creep decals, mushrooms, lichen and muddy
    stumps around them. Swap these for trodden mud, paths and cleared ground (the encampment
    sketch has a first try).
-4. **Remaining bug sounds.** The wet splatter on death (at least a body-fall thud when gore is
+3. **Remaining bug sounds.** The wet splatter on death (at least a body-fall thud when gore is
    off). Nests and worms are silent now; a building could crumble with a
    stone-collapse sound instead of just the debris explosion.
-5. **Test coverage.** Grow the gallery scenario and its automatic checks with each feature as
+4. **Test coverage.** Grow the gallery scenario and its automatic checks with each feature as
    it's built, not at the end.
-6. **Chimney smoke.** The houses and flats have chimneys; a thin trail of smoke from them would
+5. **Chimney smoke.** The houses and flats have chimneys; a thin trail of smoke from them would
    make the settlements feel lived in, alongside the lit windows and street lamps.
-7. **Refugees.** When a settlement is destroyed, its surviving people walk to the nearest other
+6. **Refugees.** When a settlement is destroyed, its surviving people walk to the nearest other
    settlement instead of fighting to the death.
-8. **Factoriopedia.** Every enemy has its own small simulation scene there. Check they look
+7. **Factoriopedia.** Every enemy has its own small simulation scene there. Check they look
    right, especially the nests and worms.
-9. **Main menu and tips.** The main menu's background battles and one tips-and-tricks scene
+8. **Main menu and tips.** The main menu's background battles and one tips-and-tricks scene
     include biters. Check they look right.
-10. **Leftover bug icons.** Corpse and death-effect prototypes still have bug icons, which show
+9. **Leftover bug icons.** Corpse and death-effect prototypes still have bug icons, which show
     up in places like the map editor.
-11. **Achievements.** Keep the names ("Pest control", "It stinks and they don't like it",
+10. **Achievements.** Keep the names ("Pest control", "It stinks and they don't like it",
     "Steamrolled"), consistent with keeping the enemy names. Check whether their icons still
     show bugs.
-12. **Saves and multiplayer.** Test adding the mod to an existing save, removing it again, and
+11. **Saves and multiplayer.** Test adding the mod to an existing save, removing it again, and
     a multiplayer game, before anyone else plays it.
-13. **Compatibility.** Make sure Space Age (including captured spawners) and other enemy mods
+12. **Compatibility.** Make sure Space Age (including captured spawners) and other enemy mods
     (Armoured Biters, Rampant) don't break anything. Later, maybe a generic fallback that
     dresses any unknown enemy as a person of the closest tier.
-14. **Mod portal release.** A 144x144 thumbnail (a crop from a gallery screenshot works), a
+13. **Mod portal release.** A 144x144 thumbnail (a crop from a gallery screenshot works), a
     description that states the intent, screenshots, a license, version 1.0.0, upload. Needs
     the framing question below answered first.
-15. **Translations.** Other languages for the settings text.
+14. **Translations.** Other languages for the settings text.
 
 ## Needs more thought
 
@@ -73,3 +65,11 @@ it doesn't look like an existing object, and within the footprint of what it rep
    visuals carry it alone. Leaning toward visuals only, to match keeping the names.
 5. **Settlement place names on the map.** Naming a place makes it a place, but this pulls
    against keeping the dehumanizing labels. Leaning toward leaving it out.
+6. **A bottle shadow that starts at the thrower's feet.** The stream draws the shadow on the
+   bottle's ground track, so it leaves the hand with the bottle and meets it at the landing. A
+   stream cannot start that shadow lower, at the feet, and close the gap over the flight. An
+   artillery shell and a grenade can hold the picture above its own shadow and bring them
+   together at the impact, and a grenade's shadow can tumble with the body. Either replaces the
+   acid stream, so the arc, the goo, the sticker and the splash would have to be rebuilt. A
+   grenade descends from a fixed height and would not climb the ten tiles of a long throw.
+   Worth leaving the stream for that shadow?

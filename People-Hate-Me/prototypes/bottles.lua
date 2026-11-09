@@ -56,8 +56,9 @@ bottles.throw_sound = sound("__base__/sound/fight/throw-projectile", 6, 0.5)
 local breaking_glass = sound("__base__/sound/car-glass-impact", 5, 0.45)
 
 -- A bottle tumbling end over end: one of the artillery's spent shell casings, tinted as green
--- glass. A burning one has a rag in its neck, the start of a ground fire's flicker.
-local function bottle(size, burning, as_shadow)
+-- glass. It glows, the way the acid spit did. A burning one has a rag in its neck, the start
+-- of a ground fire's flicker.
+local function bottle(size, burning)
   local casing =
   {
     filename = "__base__/graphics/particle/artillery-shell-particle/artillery-shells.png",
@@ -68,11 +69,8 @@ local function bottle(size, burning, as_shadow)
     frame_count = 12,
     animation_speed = 0.5,
     scale = 0.5 * size,
+    draw_as_glow = true,
   }
-  if as_shadow then
-    casing.draw_as_shadow = true
-    return casing
-  end
   casing.tint = glass
   if not burning then
     return casing
@@ -92,6 +90,21 @@ local function bottle(size, burning, as_shadow)
     draw_as_glow = true,
   }
   return {layers = {casing, rag}}
+end
+
+-- One frame of the tumble, drawn on the ground under the arc. A stream does not play its
+-- shadow's frames, so the rest of the sheet would never show.
+local function bottle_shadow(size)
+  return
+  {
+    filename = "__base__/graphics/particle/artillery-shell-particle/artillery-shells.png",
+    y = 36,
+    width = 34,
+    height = 36,
+    frame_count = 1,
+    scale = 0.5 * size,
+    draw_as_shadow = true,
+  }
 end
 
 -- A grenade's fireball, sized to the splash, made once per original stream.
@@ -162,17 +175,27 @@ end
 local function dress_stream(stream, size, style, name)
   local burning = bottles.landings[style].burning
   stream.particle = bottle(size, burning)
-  stream.shadow = bottle(size, burning, true)
   stream.spine_animation = nil
+  -- The tumble frames already contain the rotation, and stretching the shadow along the ground
+  -- points it somewhere else. The engine keeps this shadow on the ground under the arc.
   stream.oriented_particle = false
-  -- A stream always spawns a few particles. The first one carries the hit, so it's the bottle,
-  -- and the ones trailing it are drawn at nothing.
+  stream.shadow_scale_enabled = false
+  stream.shadow = bottle_shadow(size)
+  stream.particle_horizontal_speed_deviation = 0
+  -- One bottle. A timeout of one tick still spawns a second particle, and a buffer of one keeps
+  -- that second particle instead of the first. The splash is defined on the first, so the copy
+  -- below gives the surviving one the same landing.
+  stream.particle_buffer_size = 1
+  stream.particle_spawn_interval = 1
   stream.particle_spawn_timeout = 1
   stream.particle_start_alpha = 1
   stream.particle_end_alpha = 1
-  stream.particle_alpha_per_part = 0
-  stream.particle_scale_per_part = 0.01
+  stream.particle_alpha_per_part = 1
+  stream.particle_scale_per_part = 1
+  -- The acid animation loops for the first quarter of the flight, then holds its last frame.
+  -- Run the tumble the whole way.
   stream.particle_loop_frame_count = 12
+  stream.particle_loop_exit_threshold = 1
   stream.working_sound = nil
   if burning then
     stream.smoke_sources = {{name = "soft-fire-smoke", frequency = 0.3, position = {0, 0}, starting_frame_deviation = 60}}
@@ -197,6 +220,7 @@ local function dress_stream(stream, size, style, name)
       delivery.target_effects = effects
     end
   end)
+  stream.action = stream.initial_action
 end
 
 local function dress_splash_layers(variations, tint)

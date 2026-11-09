@@ -127,6 +127,31 @@ local function build_settlements(surface, at)
   end
 end
 
+-- The steel-plated bunker is the behemoth worm, and its reach is 48 tiles. Someone stands just
+-- inside that, so the gunner stays ready and keeps throwing the long shot. A bottle thrown this
+-- far arcs about ten tiles up; the station frame leaves that sky empty. The other stations only
+-- show throws of a few tiles.
+local bunker_reach = 48
+local long_shot = 46
+
+local function build_long_range(surface, at)
+  label(surface, "steel-plated bunker", at(0, 4))
+  enemy(surface, "behemoth-worm-turret", at(0, 0))
+
+  local tiles = {}
+  for x = 3, long_shot do
+    table.insert(tiles, {name = "stone-path", position = at(x, 0)})
+  end
+  surface.set_tiles(tiles)
+
+  for distance = 10, 40, 10 do
+    label(surface, tostring(distance), at(distance, 2.2))
+  end
+  label(surface, long_shot .. " tiles", at(long_shot, 4))
+  label(surface, "reach is " .. bunker_reach, at(long_shot, 5.8))
+  target(surface, "character", at(long_shot, 0))
+end
+
 -- People fall and settlements and positions are destroyed, over and over.
 local function build_deaths(surface, at)
   label(surface, "people falling", at(-12.5, -0.5), "right")
@@ -150,6 +175,7 @@ local stations =
   {caption = "People", origin = {150, 0}, area = {{-26, -13}, {14, 16}}, build = build_people},
   {caption = "Settlements", origin = {300, 0}, area = {{-30, -12}, {8, 17}}, build = build_settlements},
   {caption = "Deaths", origin = {450, 0}, area = {{-26, -6}, {14, 12}}, build = build_deaths},
+  {caption = "Long range", origin = {600, 0}, area = {{-10, -16}, {54, 8}}, build = build_long_range},
 }
 local deaths_station = 4
 
@@ -215,7 +241,8 @@ local function set_night(night)
   end
 end
 
-local panel_width = 460
+-- Wide enough for the station buttons, including "Long range".
+local panel_width = 580
 
 -- Centres the station in the part of the screen the panel doesn't cover, zoomed to fit.
 local function visit(player, index)

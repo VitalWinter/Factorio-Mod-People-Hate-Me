@@ -1,4 +1,13 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.3.2
+Date: 2026-11-08
+  Features:
+    - Spitters and the gunners in defensive positions throw bottles of glowing yellow goo instead of spitting acid. The arc, the damage, the puddle and the slowdown are unchanged, and it stays acid damage, since the goo is a caustic chemical.
+    - Bottles smash when they land. The "Exploding bottles" startup setting, off by default, makes them burst into a fireball instead.
+  Changes:
+    - The throw is the engineer's pickaxe swing, so the pickaxe shows in the throwing hand. Spitters and gunners sound like a thrown bottle instead of a gunshot.
+    - A thrown bottle glows, the way the acid spit did, and casts a shadow on the ground under its arc.
+---------------------------------------------------------------------------------------------------
 Version: 0.3.1
 Date: 2026-11-08
   Changes:
