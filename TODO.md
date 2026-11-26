@@ -61,21 +61,24 @@ only the look and sound change, town buildings of a civilization (only the worms
 built from several assets so it doesn't look like an existing object, and within the footprint
 of what it replaces.
 
-1. **Gameplay differences already in the mod.** `tools\parity.ps1` found these; each is listed
-   in `tools\parity-allowlist.txt` as waiting for the owner's decision. Each one either gets
-   accepted there, with the reason, or put back to the base game's value.
+1. **Accuracy or looks.** The owner accepted two timing differences for the look (listed in
+   `tools\parity-allowlist.txt`), and may come back to them, or add a setting that chooses
+   exact timing over the look.
    - Bottles leave the thrower's hand instead of where the bug's head was, so they start
      further from the target and land later: up to 5.5 ticks for spitters, up to 12 for worms
-     (a big worm measured 9). Putting the base values back means the bottle appears in the air beside
-     the person.
+     (a big worm measured 9). The landing time depends only on how far the start is from the
+     landing, so exact timing needs the bug's start point: a ring about 1 tile out from a small
+     spitter, 2.4 from a behemoth spitter, and 2.5 to 4.7 from a worm. (AI) Something could be
+     drawn there, like a mechanical launching arm on the positions and an underhand throw for
+     spitters. Or a script could draw the bottle from the hand over an invisible base stream,
+     though it can't know each throw's random speed, so its splash could be up to a tenth of
+     the flight early or late.
    - A throw is one bottle, where the acid was a stream of blobs. A stream always spawns at
      least two particles, and only the first carries the landing; the bottle is the second, so
      it lands 2 ticks later (measured 163 against 161). The damage, puddle and slowdown were
-     measured the same.
-   - People's selection boxes (what the mouse hovers, clicks and aims at) are the shape of a
-     standing person instead of a low bug. From medium up they're about half the bug box's
-     area, so a person is harder to click; the small spitter's is larger. The gallery's
-     automatic checks currently require this.
+     measured the same. The acid's own particle settings land on time, and the extra bottles
+     can be hidden, but the engine still draws their shadows. Whether the stream's shadow
+     scaling hides those too is untested (it needs a run with graphics).
 2. (AI) **More kinds of building.** Biter nests are always the two houses, and spitter nests
    are the flats or the hall. A mirrored street of houses, a shop or a school would make towns
    less uniform. How much variety is worth it, and should the bugs' variety (biter versus

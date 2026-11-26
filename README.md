@@ -47,8 +47,10 @@ These come from the project owner. **(AI)** marks a part that the AI assistant a
 
 - Only how the game looks and sounds changes. Every enemy keeps its health, speed, damage,
   range, timing, footprint and behaviour from the base game, and nothing is added that plays
-  differently. `tools\parity.ps1` checks this on every test run; the differences still in the
-  mod are listed in `tools\parity-allowlist.txt`, waiting for the owner's decision.
+  differently. `tools\parity.ps1` checks this on every test run. The few exceptions the owner
+  accepted for the look (where a bottle leaves the hand, one bottle instead of a stream of
+  blobs, and person-shaped selection boxes) are listed with their reasons in
+  `tools\parity-allowlist.txt`.
 - What you see matches what it does. The goo is drawn as a puddle because the acid's danger is
   the puddle; it doesn't look like fire, because it isn't fire. (The "Exploding bottles"
   setting, off by default, is the owner's exception, kept to try out.)

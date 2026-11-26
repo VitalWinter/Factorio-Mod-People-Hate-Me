@@ -28,7 +28,7 @@ After any data-stage change, run `tools\test.ps1`; it runs `tools\parity.ps1`.
 - Only add a field to `PRESENTATION` in `tools\parity.py` if the game reads it for drawing or
   sound alone. If unsure, measure it: copies of the prototype with different values in a
   headless scenario, compared tick by tick.
-- Don't write tests that require a gameplay difference (the gallery's selection-box check does).
+- Don't write tests that require a gameplay difference the owner hasn't accepted.
 
 The README's other design rules apply to every visual change too: body size within 20% of the
 engineer, base-game graphics, kitbashes that don't look like an existing object, a modern
