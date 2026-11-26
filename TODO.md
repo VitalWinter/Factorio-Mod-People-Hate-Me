@@ -68,12 +68,14 @@ of what it replaces.
      further from the target and land later: up to 5.5 ticks for spitters, up to 12 for worms
      (a big worm measured 9). Putting the base values back means the bottle appears in the air beside
      the person.
-   - A throw is one bottle, where the acid was a stream of six blobs. The bottle that lands
-     leaves a tick after the acid's first blob did, so it lands a tick later. The damage,
-     puddle and slowdown were measured the same.
+   - A throw is one bottle, where the acid was a stream of blobs. A stream always spawns at
+     least two particles, and only the first carries the landing; the bottle is the second, so
+     it lands 2 ticks later (measured 163 against 161). The damage, puddle and slowdown were
+     measured the same.
    - People's selection boxes (what the mouse hovers, clicks and aims at) are the shape of a
-     standing person instead of a low bug. The gallery's automatic checks currently require
-     this.
+     standing person instead of a low bug. From medium up they're about half the bug box's
+     area, so a person is harder to click; the small spitter's is larger. The gallery's
+     automatic checks currently require this.
 2. (AI) **More kinds of building.** Biter nests are always the two houses, and spitter nests
    are the flats or the hall. A mirrored street of houses, a shop or a school would make towns
    less uniform. How much variety is worth it, and should the bugs' variety (biter versus
