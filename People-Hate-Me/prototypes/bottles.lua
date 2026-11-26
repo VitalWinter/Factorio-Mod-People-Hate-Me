@@ -181,7 +181,6 @@ local function dress_stream(stream, size, style, name)
   stream.oriented_particle = false
   stream.shadow_scale_enabled = false
   stream.shadow = bottle_shadow(size)
-  stream.particle_horizontal_speed_deviation = 0
   -- One bottle. A timeout of one tick still spawns a second particle, and a buffer of one keeps
   -- that second particle instead of the first. The splash is defined on the first, so the copy
   -- below gives the surviving one the same landing.

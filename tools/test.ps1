@@ -1,4 +1,5 @@
-# Loads the mod headless and runs the gallery scenario's checks. Exits 0 on pass, 1 on failure.
+# Loads the mod headless and runs the gallery scenario's checks, then tools\parity.ps1 to check
+# the mod still plays exactly like the base game. Exits 0 when both pass, 1 otherwise.
 . "$PSScriptRoot\common.ps1"
 
 Assert-FactorioNotRunning
@@ -11,8 +12,17 @@ $game = Start-Process -FilePath $exe -ArgumentList $arguments -NoNewWindow -Wait
 $code = $game.ExitCode
 
 if ($code -eq 0) {
-  Write-Host "PASSED" -ForegroundColor Green
+  Write-Host "Gallery checks PASSED" -ForegroundColor Green
 } else {
-  Write-Host "FAILED (exit code $code). Full log: $UserData\factorio-current.log" -ForegroundColor Red
+  Write-Host "Gallery checks FAILED (exit code $code). Full log: $UserData\factorio-current.log" -ForegroundColor Red
 }
-exit $code
+
+& powershell -ExecutionPolicy Bypass -File (Join-Path $PSScriptRoot "parity.ps1")
+$parity = $LASTEXITCODE
+
+if ($code -eq 0 -and $parity -eq 0) {
+  Write-Host "PASSED" -ForegroundColor Green
+  exit 0
+}
+Write-Host "FAILED" -ForegroundColor Red
+exit 1

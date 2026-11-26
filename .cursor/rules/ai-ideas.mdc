@@ -1,0 +1,25 @@
+---
+description: Mark the AI's own ideas with (AI) in the project's docs
+alwaysApply: true
+---
+
+# Mark AI ideas with (AI)
+
+The owner needs to see which ideas are theirs and which came from an AI assistant, so they can
+tell where the project drifts from what they expected.
+
+- In TODO.md, the README and other docs, put **(AI)** before any idea, judgement, priority or
+  design choice that came from you. Before an item it marks the whole item; inside an item, the
+  part that's yours. Leave the owner's own direction and plain facts about the game unmarked.
+- If you're unsure whether the owner asked for something, look for their own words in the past
+  chats before treating it as theirs.
+- An idea keeps its mark after the owner agrees to it; add that they agreed ("The owner said
+  graveyards look neat").
+- In chat, when you propose something the owner didn't ask for, say it's your suggestion.
+
+```markdown
+<!-- Bad: reads as if the owner wanted it -->
+5. **Chimney smoke.** A thin trail of smoke would make the settlements feel lived in.
+<!-- Good -->
+5. (AI) **Chimney smoke.** A thin trail of smoke would make the settlements feel lived in.
+```

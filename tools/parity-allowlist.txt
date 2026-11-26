@@ -1,0 +1,14 @@
+# Reviewed gameplay deviations for tools\parity.ps1.
+#
+# Each line is   <pattern> | <reason>
+# The pattern matches a difference as tools\parity.py prints it: <type>/<name>:<field path>,
+# where * matches anything. Only the owner accepts a deviation; say who decided and when. A reason
+# starting with OPEN means it's waiting for the owner's decision: it passes, but is listed on every
+# run until it's accepted here or removed from the mod.
+
+unit/*-spitter:attack_parameters.projectile_creation_parameters | OPEN: the bottle leaves the person's hand instead of where the bug's head was. It starts further from the target, so it lands up to 5.5 ticks later for spitters (measured 9 ticks later for a big worm). Keep the hand, or put the base offsets back so the bottle appears in the air beside the person?
+turret/*-worm-turret:attack_parameters.projectile_creation_parameters | OPEN: as above, for the gunners; up to 12 ticks later for the behemoth position.
+stream/acid-stream-*:particle_buffer_size | OPEN: one bottle instead of a stream of six blobs. The bottle that lands is spawned a tick after the acid's first blob, so it lands a tick later; damage, puddle and slowdown are measured the same.
+stream/acid-stream-*:particle_spawn_timeout | OPEN: part of the single bottle, above.
+stream/acid-stream-*:action | OPEN: part of the single bottle, above. The bottle that lands carries the acid's landing (initial_action), since the first blob is dropped. Measured to hit once, not twice.
+unit/*:selection_box | OPEN: the box the mouse hovers, clicks and aims at is the shape of a standing person instead of a low bug, so it covers the picture. The collision box is unchanged.
