@@ -12,7 +12,7 @@ The mod uses only assets that ship with the game. Enemy people are built from th
 own sprites, varied by size, clothing colour and armor. Their buildings are kitbashed from
 pieces of other base-game images: stone wall faces, floor tiles, furnace chimneys.
 
-## Current state (0.3.2)
+## Current state (0.3.3)
 
 | Enemy | Looks like | Attack |
 | --- | --- | --- |
@@ -37,10 +37,26 @@ Settings (Settings > Mod settings > Startup):
 - **Exploding bottles**, off by default. Turning it on makes the thrown bottles burn in the air
   and burst into a fireball where they land. Only the look changes.
 
-Design rules so far:
+Still bugs: the creep and mushrooms around nests, and the nests' and worms' icons. See
+[TODO.md](TODO.md).
 
-- Body size stays within 20% of the engineer, and tiers are told apart mainly by armor and
+## Design rules
+
+These come from the project owner. **(AI)** marks a part that the AI assistant added, as in
+[TODO.md](TODO.md).
+
+- Only how the game looks and sounds changes. Every enemy keeps its health, speed, damage,
+  range, timing, footprint and behaviour from the base game, and nothing is added that plays
+  differently. `tools\parity.ps1` checks this on every test run. The few exceptions the owner
+  accepted for the look (where a bottle leaves the hand, one bottle instead of a stream of
+  blobs, and person-shaped selection boxes) are listed with their reasons in
+  `tools\parity-allowlist.txt`.
+- What you see matches what it does. The goo is drawn as a puddle because the acid's danger is
+  the puddle; it doesn't look like fire, because it isn't fire. (The "Exploding bottles"
+  setting, off by default, is the owner's exception, kept to try out.)
+- Body size stays within 20% of the engineer. (AI) Tiers are told apart mainly by armor and
   clothing colour.
+- The game's names ("Small biter") stay.
 - Use the base game's own graphics wherever possible.
 - Anything built from them must not look like an existing object. Combine pieces of several
   assets, or change one enough that it reads as something else. Resizing is fine, but it
@@ -50,9 +66,6 @@ Design rules so far:
   spawners become town buildings (houses, flats, halls), not huts or armouries. Only the
   worms are military, as defensive positions.
 - A replacement keeps the footprint (collision box) of the structure it replaces.
-
-Still bugs: the creep and mushrooms around nests, and the nests' and worms' icons. See
-[TODO.md](TODO.md).
 
 ## Project layout
 
@@ -80,6 +93,7 @@ People-Hate-Me-Sketches/     development-only companion mod, never packaged or p
   scenarios/encampment-sketch/  a graveyard among the real nests, and proposed ground around nests
   scenarios/bottle-sketch/   the ways a thrown bottle can land, side by side, and the throws filmed frame by frame
 tools/                       PowerShell helpers (see below)
+.cursor/rules/               instructions for AI assistants: the design rules, and marking their ideas (AI)
 TODO.md                      planned work and open design questions, in priority order
 legacy/2023-attempt/         the original 2023 attempt (Factorio 1.1), kept for reference
 ```
@@ -111,8 +125,14 @@ Run the scripts from the repo root. If PowerShell refuses to run scripts, prefix
 - `tools\test.ps1` loads the mod headless in an isolated mods folder (`.dev\mods`, only base,
   this mod and its sketches), runs the gallery scenario, and checks that every enemy type still
   attacks, leaves a corpse, and was redrawn, that every worm still fires, that every spitter's
-  and worm's bottles leave goo, and that destroyed nests and worms leave ruins. Takes a few
-  seconds; exits 0 on pass.
+  and worm's bottles leave goo, and that destroyed nests and worms leave ruins. Then it runs
+  `tools\parity.ps1`. Takes about ten seconds; exits 0 when both pass.
+- `tools\parity.ps1` checks that the mod still plays exactly like the base game. It has
+  Factorio dump every prototype headless three times (base game only, with the mod, and with
+  the mod's startup settings flipped), and `tools\parity.py` compares them with everything that
+  only looks or sounds different removed. Any other difference fails unless it's listed in
+  `tools\parity-allowlist.txt` with the reason it was accepted. Needs Python 3. `-Reuse`
+  compares the last dumps again without starting Factorio.
 - `tools\play.ps1` opens the showroom with graphics and sound and leaves it open, to watch the
   mod in action. Its stations keep running: the thrown bottles smashing, the steel-plated
   bunker's long shot, and bottles bursting as the Exploding bottles setting makes them, every

@@ -1,0 +1,35 @@
+---
+description: The mod only changes how Factorio looks and sounds; how to keep it that way
+alwaysApply: true
+---
+
+# Only the look and sound change
+
+People Hate Me redraws the enemies; the game must play exactly like the base game. This is the
+owner's core rule (README, "Design rules"), and it outranks making something look better.
+
+Gameplay is anything the simulation reads: health, resistances, speed, damage, range, attack
+and state timing, where a projectile or stream starts and how it flies, collision and selection
+boxes, what spawns where, enemy behaviour, pollution, kill statistics, and any entity a script
+creates or changes during a game.
+
+Before proposing or making a change:
+- If it could touch gameplay, say so in the first sentence ("This changes gameplay: ...") and
+  ask the owner before doing it. Never present it as a visual change.
+- An idea that changes what enemies do (like survivors walking to another town) goes under
+  "Out of scope" in TODO.md, with the reason, not under "Ready to do".
+- When a visual goal seems to need a gameplay change, offer the closest visual-only option
+  first and state the trade-off.
+
+After any data-stage change, run `tools\test.ps1`; it runs `tools\parity.ps1`.
+- A new difference fails the check. Put the base value back, or ask the owner.
+- Never add or change an entry in `tools\parity-allowlist.txt` without the owner's decision,
+  and record who decided. Undecided entries start with `OPEN`.
+- Only add a field to `PRESENTATION` in `tools\parity.py` if the game reads it for drawing or
+  sound alone. If unsure, measure it: copies of the prototype with different values in a
+  headless scenario, compared tick by tick.
+- Don't write tests that require a gameplay difference the owner hasn't accepted.
+
+The README's other design rules apply to every visual change too: body size within 20% of the
+engineer, base-game graphics, kitbashes that don't look like an existing object, a modern
+civilization where only the worms are military, and the original footprint.

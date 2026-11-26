@@ -108,6 +108,9 @@ local function man(worm, design, look)
   worm.folded_animation = person.pose(look, "idle", {offset = offset, facing = 4})
   worm.preparing_animation = throwing(ready)
   worm.prepared_animation = throwing(ready)
+  -- Between attacks the worm sometimes pauses in an alternative prepared state, which sets how
+  -- often it attacks. The gunner looks the same in it.
+  worm.prepared_alternative_animation = throwing(ready)
   worm.starting_attack_animation = throwing(throw.wind_up)
   worm.attacking_animation = throwing(throw.release)
   worm.ending_attack_animation = throwing(throw.release, throw.recover, held)
@@ -146,8 +149,6 @@ for name, position in pairs(definitions.positions) do
     worm.integration = nil
     man(worm, design, look)
 
-    worm.prepared_alternative_chance = 0
-    worm.prepared_alternative_animation = nil
     for _, sound in pairs{"preparing_sound", "prepared_sound", "prepared_alternative_sound", "folding_sound", "dying_sound"} do
       worm[sound] = nil
     end

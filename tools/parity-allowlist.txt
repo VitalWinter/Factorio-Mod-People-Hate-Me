@@ -1,0 +1,14 @@
+# Reviewed gameplay deviations for tools\parity.ps1.
+#
+# Each line is   <pattern> | <reason>
+# The pattern matches a difference as tools\parity.py prints it: <type>/<name>:<field path>,
+# where * matches anything. Only the owner accepts a deviation; say who decided and when. A reason
+# starting with OPEN means it's waiting for the owner's decision: it passes, but is listed on every
+# run until it's accepted here or removed from the mod.
+
+unit/*-spitter:attack_parameters.projectile_creation_parameters | Accepted by the owner, 2026-11-26, for the look (see "Accuracy or looks" in TODO.md): the bottle leaves the person's hand instead of where the bug's head was. It starts further from the target, so it lands up to 5.5 ticks later.
+turret/*-worm-turret:attack_parameters.projectile_creation_parameters | Accepted by the owner, 2026-11-26, as above, for the gunners: up to 12 ticks later (a big worm measured 9).
+stream/acid-stream-*:particle_buffer_size | Accepted by the owner, 2026-11-26, for the look: one bottle instead of the acid's stream of blobs. A stream always spawns at least two particles, and only the first carries the landing. The bottle is the second, so it lands 2 ticks after the acid's first blob (measured 163 against 161); damage, puddle and slowdown are measured the same.
+stream/acid-stream-*:particle_spawn_timeout | Accepted by the owner, 2026-11-26: part of the single bottle, above.
+stream/acid-stream-*:action | Accepted by the owner, 2026-11-26: part of the single bottle, above. The bottle that lands carries the acid's landing (initial_action), since the first blob is dropped. Measured to hit once, not twice.
+unit/*:selection_box | Accepted by the owner, 2026-11-26: the box the mouse hovers, clicks and aims at is the shape of a standing person instead of a low bug, so it covers the picture. From medium up it's about half the bug box's area, so a person is harder to click; the small spitter's is larger. The collision box is unchanged.
